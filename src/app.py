@@ -1,3 +1,13 @@
+##########################################################
+# Example server application has the following routes that is exposed to any client connecting to the server:
+# '/upload'
+#       Accepts POST requests with the video file and 'name' field.
+#       Saves the uploaded file and initiates the map building process. 
+#
+# Note: All routes are CORS enabled (CORS = Cross-Origin Resource Sharing)
+##########################################################
+
+
 import os
 
 from flask import Flask, request
@@ -7,7 +17,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Receive the uploaded video
-@app.route('/', methods=['POST'])
+@app.route('/upload', methods=['POST'])
 def upload_video():
 
     video = request.files['video']

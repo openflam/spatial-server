@@ -14,3 +14,8 @@ git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 ```
 conda env create -f environment.yml
 ```
+
+## Start the server
+```
+python src/app.py
+```
