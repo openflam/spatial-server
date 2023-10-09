@@ -42,3 +42,7 @@ pip install -r third_party/hloc/requirements.txt
 ```
 python src/app.py
 ```
+
+## Visualizing the map
+
+Once the video is uploaded using the spatial-client, the map building process starts. The map can be visualized in Blender using my clone of the [BlenderNeuralangelo](https://github.com/SagarB-97/BlenderNeuralangelo) add-on. (The only difference between my clone and the add-on is the path structure).
