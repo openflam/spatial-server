@@ -33,9 +33,9 @@ git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
     pip install nerfstudio
     ```
 - Install `hloc` requirements: 
-```
-pip install -r third_party/hloc/requirements.txt
-```
+    ```
+    pip install -r third_party/hloc/requirements.txt
+    ```
 
 
 ## Start the server
