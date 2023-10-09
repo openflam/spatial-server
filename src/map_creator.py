@@ -14,8 +14,8 @@ dir_path = Path(os.path.dirname(os.path.realpath(__file__))).parents[0]
 sys.path.append(dir_path.__str__())
 
 from third_party.hloc.hloc import extract_features, pairs_from_covisibility, match_features, triangulation, pairs_from_retrieval, localize_sfm, visualization
-from third_party.hloc.hloc.utils import viz_3d, io
-from third_party.hloc.hloc.localize_sfm import QueryLocalizer, pose_from_cluster
+
+import config
 
 def create_map_from_video(video_path):
     # Call ns-process-data
@@ -36,7 +36,7 @@ def create_map_from_video(video_path):
     # Feature extraction
     ## Extract local features in each data set image using Superpoint
     print("Extracting local features using Superpoint..")
-    local_feature_conf = extract_features.confs['superpoint_aachen']
+    local_feature_conf = extract_features.confs[config.LOCAL_FEATURE_EXTRACTOR]
     local_features_path = extract_features.main(
         conf = local_feature_conf,
         image_dir = image_dir,
@@ -45,7 +45,7 @@ def create_map_from_video(video_path):
 
     print("Extracting global descriptors using NetVLad..")
     ## Extract global descriptors from each image using NetVLad
-    global_descriptor_conf = extract_features.confs['netvlad']
+    global_descriptor_conf = extract_features.confs[config.GLOBAL_DESCRIPTOR_EXTRACTOR]
     global_descriptors_path = extract_features.main(
         conf = global_descriptor_conf,
         image_dir = image_dir,
@@ -69,7 +69,7 @@ def create_map_from_video(video_path):
 
     ## Use the created pairs to match images and store the matching result in a match file
     print("Matching features using SuperGlue")
-    match_features_conf = match_features.confs['superglue']
+    match_features_conf = match_features.confs[config.MATCHER]
     sfm_matches_path = match_features.main(
         conf = match_features_conf,
         pairs = sfm_pairs_path,
@@ -77,13 +77,19 @@ def create_map_from_video(video_path):
         export_dir = hloc_output_dir
     )
 
+    try:
     ## Use the matches to reconstruct an SfM model
-    print("Reconstructing Model..")
-    reconstruction = triangulation.main(
-        sfm_dir = sfm_reconstruction_path,
-        reference_model = colmap_model_path,
-        image_dir = image_dir,
-        pairs = sfm_pairs_path,
-        features = local_features_path,
-        matches = sfm_matches_path
-    )
+        print("Reconstructing Model..")
+        reconstruction = triangulation.main(
+            sfm_dir = sfm_reconstruction_path,
+            reference_model = colmap_model_path,
+            image_dir = image_dir,
+            pairs = sfm_pairs_path,
+            features = local_features_path,
+            matches = sfm_matches_path
+        )
+    # If the reconstruction fails, print the error trace
+    except Exception as e:
+        print("Reconstruction failed..Error trace:")
+        print(e)
+
