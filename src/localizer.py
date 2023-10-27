@@ -85,5 +85,6 @@ def localize(img_path, dataset_name):
 
     return {
         'qvec': ret['qvec'].tolist(),
-        'tvec': ret['tvec'].tolist()
+        'tvec': ret['tvec'].tolist(),
+        'num_inliers': int(ret['num_inliers']),
     }
