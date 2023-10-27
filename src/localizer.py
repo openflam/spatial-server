@@ -83,8 +83,12 @@ def localize(img_path, dataset_name):
         features_q_path = query_local_features_path
     )
 
-    return {
-        'qvec': ret['qvec'].tolist(),
-        'tvec': ret['tvec'].tolist(),
-        'num_inliers': int(ret['num_inliers']),
-    }
+    if ret['success']:
+        return {
+            'success': True,
+            'qvec': ret['qvec'].tolist(),
+            'tvec': ret['tvec'].tolist(),
+            'num_inliers': int(ret['num_inliers']),
+        }
+    else:
+        return {'success': False}
