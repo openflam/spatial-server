@@ -52,7 +52,9 @@ def upload_video():
 def localize():
     # Download an image, save it and localize it against the map
     image = request.files['image']
-    name = request.form.get('name', '')
+    name = request.form.get('name')
+    aframe_camera_matrix_world = request.form.get('aframe_camera_matrix_world')
+    aframe_camera_matrix_world = list(map(float, aframe_camera_matrix_world.split(',')))
 
     # Create the folder if it doesn't exist
     random_id = str(uuid.uuid4())
@@ -65,7 +67,8 @@ def localize():
     image.save(image_path)
 
     # Call the localization function
-    pose = localizer.localize(image_path, name)
+    pose = localizer.localize(image_path, name, aframe_camera_matrix_world)
+    print("Localizer Result: ", pose)
     return jsonify(pose)
 
 if __name__ == '__main__':

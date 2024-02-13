@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 import sys
+from scipy.spatial.transform import Rotation
 
 dir_path = Path(os.path.dirname(os.path.realpath(__file__))).parents[0]
 sys.path.append(dir_path.__str__())
@@ -9,9 +10,10 @@ from third_party.hloc.hloc import extract_features, pairs_from_retrieval, match_
 from third_party.hloc.hloc.localize_sfm import QueryLocalizer, pose_from_cluster
 import pycolmap
 import config
+from coordinate_transforms import get_arscene_pose_matrix
 
 
-def localize(img_path, dataset_name):
+def localize(img_path, dataset_name, aframe_camera_matrix_world):
     img_path = Path(img_path)
 
     local_feature_conf = extract_features.confs[config.LOCAL_FEATURE_EXTRACTOR]
@@ -86,8 +88,7 @@ def localize(img_path, dataset_name):
     if ret['success']:
         return {
             'success': True,
-            'qvec': ret['qvec'].tolist(),
-            'tvec': ret['tvec'].tolist(),
+            'arscene_pose': get_arscene_pose_matrix(aframe_camera_matrix_world, ret),
             'num_inliers': int(ret['num_inliers']),
         }
     else:
