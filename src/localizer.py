@@ -1,3 +1,4 @@
+import numpy as np
 import os
 from pathlib import Path
 import sys
@@ -12,10 +13,25 @@ import pycolmap
 import config
 from coordinate_transforms import get_arscene_pose_matrix
 
+def _homogenize(rotation, translation):
+    """
+    Combine the (3,3) rotation matrix and (3,) translation matrix to
+    one (4,4) transformation matrix
+    """
+    homogenous_array = np.eye(4)
+    homogenous_array[:3, :3] = rotation
+    homogenous_array[:3, 3] = translation
+    return homogenous_array
 
-def localize(img_path, dataset_name, aframe_camera_matrix_world):
+
+def _rot_from_qvec(qvec):
+    # Change (w,x,y,z) to (x,y,z,w)
+    return Rotation.from_quat([qvec[1], qvec[2], qvec[3], qvec[0]])
+
+
+def get_hloc_camera_matrix_from_image(img_path, dataset_name):
     img_path = Path(img_path)
-
+    
     local_feature_conf = extract_features.confs[config.LOCAL_FEATURE_EXTRACTOR]
     global_descriptor_conf = extract_features.confs[config.GLOBAL_DESCRIPTOR_EXTRACTOR]
     match_features_conf = match_features.confs[config.MATCHER]
@@ -27,7 +43,7 @@ def localize(img_path, dataset_name, aframe_camera_matrix_world):
 
     query_image_name = os.path.basename(img_path)
 
-    # Query data
+    # Query data dirs
     query_processing_data_dir = Path(os.path.dirname(img_path))
     query_global_matches_path = query_processing_data_dir / 'global_match_pairs.txt'
     query_local_match_path = query_processing_data_dir / 'local_match_data.h5'
@@ -85,10 +101,24 @@ def localize(img_path, dataset_name, aframe_camera_matrix_world):
         features_q_path = query_local_features_path
     )
 
+    hloc_camera_matrix = None
+    if ret['success']:
+        hloc_camera_matrix = np.linalg.inv(_homogenize(
+            rotation = _rot_from_qvec(ret['qvec']).as_matrix(), 
+            translation = ret['tvec'],
+        ))
+
+    return hloc_camera_matrix, ret
+
+
+def localize(img_path, dataset_name, aframe_camera_matrix_world):
+    
+    hloc_camera_matrix, ret = get_hloc_camera_matrix_from_image(img_path, dataset_name)
+
     if ret['success']:
         return {
             'success': True,
-            'arscene_pose': get_arscene_pose_matrix(aframe_camera_matrix_world, ret),
+            'arscene_pose': get_arscene_pose_matrix(aframe_camera_matrix_world, hloc_camera_matrix),
             'num_inliers': int(ret['num_inliers']),
         }
     else:
