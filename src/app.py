@@ -11,6 +11,7 @@
 
 
 import os
+import pickle
 import uuid
 
 from flask import Flask, request, jsonify
@@ -62,9 +63,12 @@ def localize():
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
     
-    # Save the uploaded image with the filename 'query_<random_id>.jpg' in the specified folder
-    image_path = os.path.join(folder_path, f'query_image.png')
+    # Save the uploaded image
+    image_path = os.path.join(folder_path, 'query_image.png')
     image.save(image_path)
+    # Save aframe camera matrix
+    with open(os.path.join(folder_path, 'aframe_camera_matrix_world.pkl'), 'wb') as f:
+        pickle.dump(aframe_camera_matrix_world, f)
 
     # Call the localization function
     pose = localizer.localize(image_path, name, aframe_camera_matrix_world)
