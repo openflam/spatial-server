@@ -116,9 +116,14 @@ def localize(img_path, dataset_name, aframe_camera_matrix_world):
     hloc_camera_matrix, ret = get_hloc_camera_matrix_from_image(img_path, dataset_name)
 
     if ret['success']:
+        arscene_pose_matrix = get_arscene_pose_matrix(
+            aframe_camera_pose = aframe_camera_matrix_world,
+            hloc_camera_matrix = hloc_camera_matrix,
+            dataset_name = dataset_name
+        )
         return {
             'success': True,
-            'arscene_pose': get_arscene_pose_matrix(aframe_camera_matrix_world, hloc_camera_matrix),
+            'arscene_pose': arscene_pose_matrix,
             'num_inliers': int(ret['num_inliers']),
         }
     else:
