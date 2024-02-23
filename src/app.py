@@ -32,7 +32,7 @@ executor = ProcessPoolExecutor()
 def upload_video():
 
     video = request.files['video']
-    name = request.form.get('name', '')
+    name = request.form['name']
 
     # Create the folder if it doesn't exist
     folder_path = os.path.join('data', 'map_data', name)

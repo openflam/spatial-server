@@ -1,3 +1,4 @@
+import glob
 import numpy as np
 import os
 from pathlib import Path
@@ -6,7 +7,7 @@ import sys
 
 import localizer
 
-def get_scale(img_path_1, img_path_2, dataset_name):
+def get_scale_two_images(img_path_1, img_path_2, dataset_name):
     hloc_camera_matrix_1 = localizer.get_hloc_camera_matrix_from_image(img_path_1, dataset_name)[0]
     hloc_camera_matrix_2 = localizer.get_hloc_camera_matrix_from_image(img_path_2, dataset_name)[0]
 
@@ -33,21 +34,40 @@ def get_scale(img_path_1, img_path_2, dataset_name):
 
     scale = aframe_distance / hloc_distance
 
+    return scale
+
+def get_scale_from_query_dir(query_dir):
+    dataset_name = query_dir.split('/')[-1]
+    all_queries_dirs = glob.glob(query_dir + '/*')
+    img_paths = []
+    for dir in all_queries_dirs:
+        img_paths.append(dir + '/query_image.png')
+    
+    # Get scale for each pair of images
+    scales = []
+    for i in range(len(img_paths)):
+        for j in range(i+1, len(img_paths)):
+            scales.append(get_scale_two_images(img_paths[i], img_paths[j], dataset_name))
+    
+    print("Scales: ", scales)
+
+    # Get the median scale
+    scale = np.median(scales)
+    
     # Save the scale to a file
     dataset_path = Path(os.path.join('data', 'map_data', dataset_name))
     scale_file = dataset_path / 'scale.pkl'
     with open(scale_file, 'wb') as f:
-        pickle.dump(scale, f)
-
+        pickle.dump(scales, f)
+    
     return scale
+
 
 if __name__ == '__main__':
     # Read the image paths and dataset name from the command line
-    img_path_1 = sys.argv[1]
-    img_path_2 = sys.argv[2]
-    dataset_name = sys.argv[3]
+    query_dir = sys.argv[1]
 
-    scale = get_scale(img_path_1, img_path_2, dataset_name)
+    scale = get_scale_from_query_dir(query_dir)
 
     print("Scale: ", scale)
 

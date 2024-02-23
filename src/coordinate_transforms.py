@@ -33,11 +33,12 @@ def get_arscene_pose_matrix(aframe_camera_pose, hloc_camera_matrix, dataset_name
     scale_file = dataset_path / 'scale.pkl'
     if scale_file.exists():
         with open(scale_file, 'rb') as f:
-            scale = pickle.load(f)
+            scales = pickle.load(f)
+            scale_median = np.median(scales)
             scale_matrix = np.eye(4)
             for i in range(3):
-                scale_matrix[i,i] = scale
+                scale_matrix[i,i] = scale_median
             arscene_pose_aframe = scale_matrix @ arscene_pose_aframe
-            print("Scale applied: ", scale)
+            print("Scale applied: ", scale_median)
 
     return arscene_pose_aframe.T.flatten().tolist()
