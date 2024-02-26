@@ -39,10 +39,11 @@ git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 
 
 ## Start the server
+From the root of this repository, run:
 ```
-python src/app.py
+flask --debug --app spatial_server/server run --host 0.0.0.0 --port 8001
 ```
 
 ## Visualizing the map
 
-Once the video is uploaded using the spatial-client, the map building process starts. The map can be visualized in Blender using my clone of the [BlenderNeuralangelo](https://github.com/SagarB-97/BlenderNeuralangelo) add-on. (The only difference between my clone and the add-on is the path structure).
+Once the video is uploaded using the spatial-client, the map building process starts. The map can be visualized in Blender using my clone of the [BlenderNeuralangelo](https://github.com/SagarB-97/BlenderNeuralangelo) add-on. (The only difference between my clone and the add-on is the directory structure).

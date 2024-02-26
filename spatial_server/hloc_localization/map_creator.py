@@ -8,14 +8,10 @@
 
 import os
 from pathlib import Path
-import sys
-
-dir_path = Path(os.path.dirname(os.path.realpath(__file__))).parents[0]
-sys.path.append(dir_path.__str__())
 
 from third_party.hloc.hloc import extract_features, pairs_from_covisibility, match_features, triangulation, pairs_from_retrieval, localize_sfm, visualization
 
-import config
+from . import config
 
 def create_map_from_video(video_path):
     # Call ns-process-data

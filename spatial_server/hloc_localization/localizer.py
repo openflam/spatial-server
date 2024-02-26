@@ -1,17 +1,14 @@
 import numpy as np
 import os
 from pathlib import Path
-import sys
+import pycolmap
 from scipy.spatial.transform import Rotation
-
-dir_path = Path(os.path.dirname(os.path.realpath(__file__))).parents[0]
-sys.path.append(dir_path.__str__())
 
 from third_party.hloc.hloc import extract_features, pairs_from_retrieval, match_features
 from third_party.hloc.hloc.localize_sfm import QueryLocalizer, pose_from_cluster
-import pycolmap
-import config
-from coordinate_transforms import get_arscene_pose_matrix
+
+from . import config
+from .coordinate_transforms import get_arscene_pose_matrix
 
 def _homogenize(rotation, translation):
     """
