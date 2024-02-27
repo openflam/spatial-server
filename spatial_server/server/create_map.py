@@ -1,11 +1,15 @@
 import os
 
-from flask import Blueprint, request
+from flask import Blueprint, request, render_template
 
 from spatial_server.hloc_localization import map_creator
 from spatial_server.server import executor
 
 bp = Blueprint('create_map', __name__, url_prefix='/create_map')
+
+@bp.route('/', methods=['GET'])
+def show_map_upload_form():
+    return render_template('video_upload.html')
 
 @bp.route('/video', methods=['POST'])
 def upload_video():
