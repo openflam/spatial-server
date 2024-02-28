@@ -5,3 +5,5 @@ dependencies:
   - python=3.8
   - flask
   - flask-cors
+  - pip:
+    - ffmpeg-python

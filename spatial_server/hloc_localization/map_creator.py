@@ -9,14 +9,31 @@
 import os
 from pathlib import Path
 
+import ffmpeg
+
 from third_party.hloc.hloc import extract_features, pairs_from_covisibility, match_features, triangulation, pairs_from_retrieval, localize_sfm, visualization
 
 from . import config
 
 def create_map_from_video(video_path):
+    # Estimate the number of frames to extract
+    probe = ffmpeg.probe(video_path)
+    video_stream = next(stream for stream in probe['streams'] if stream['codec_type'] == 'video')
+    frame_rate_num, frame_rate_den = video_stream['avg_frame_rate'].split('/')
+    frame_rate = float(frame_rate_num) / float(frame_rate_den)
+    duration = float(video_stream['duration'])
+    num_frames_estimate = duration * frame_rate
+    num_frames_to_extract = int(num_frames_estimate / 4) # Extract 1 frame in every 4 frames
+    print(f"Estimated number of frames to extract: {num_frames_to_extract}")
+
     # Call ns-process-data
     ns_process_output_dir = os.path.dirname(video_path)
-    os.system(f'ns-process-data video --data {video_path} --output_dir {ns_process_output_dir}')
+    os.system((
+        f'ns-process-data video ' 
+        f'--data {video_path} ' 
+        f'--output_dir {ns_process_output_dir} '
+        f'--num-frames-target {num_frames_to_extract} '
+    ))
 
     # Build the hloc map and features
 
