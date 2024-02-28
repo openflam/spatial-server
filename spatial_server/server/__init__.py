@@ -20,10 +20,10 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_mapping(test_config)
     
-    from . import localize
+    from .routes import localize
     app.register_blueprint(localize.bp)
 
-    from . import create_map
+    from .routes import create_map
     app.register_blueprint(create_map.bp)
 
     CORS(app)
