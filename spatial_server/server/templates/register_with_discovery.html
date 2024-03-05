@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Register</title>
+</head>
+
+<body>
+    <div class="container-sm position-absolute top-50 start-50 translate-middle">
+        <h2 class="text-center">Register with server disocvery service</h2>
+
+        <div class="mb-3">
+            <label for="url" class="form-label">URL</label>
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="url-prefix">{{ request.url_root }}</span>
+                <input type="text" class="form-control" id="url">
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label for="latitude" class="form-label">Latitude</label>
+            <input type="number" class="form-control" id="latitude" placeholder="44.440">
+        </div>
+
+        <div class="mb-3">
+            <label for="longitude" class="form-label">Longitude</label>
+            <input type="number" class="form-control" id="longitude" placeholder="-54.440">
+        </div>
+
+        <div class="mb-3">
+            <label for="resolution" class="form-label">Resolution</label>
+            <input type="number" class="form-control" id="resolution" placeholder="10">
+        </div>
+
+        <button type="button" class="btn btn-success" onclick="registerWithDiscovery()">Submit</button>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename = 'scripts/register_with_discovery.js') }}"></script>
+</body>
+
+</html>
