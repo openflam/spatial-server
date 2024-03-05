@@ -32,6 +32,9 @@ def create_app(test_config=None):
     from .routes import register_with_discovery
     app.register_blueprint(register_with_discovery.bp)
 
+    from .routes import download_map
+    app.register_blueprint(download_map.bp)
+
     CORS(app)
 
     return app
