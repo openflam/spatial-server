@@ -1,5 +1,7 @@
+import os
+
 from flask import (
-    Blueprint, current_app as app, render_template, request
+    Blueprint, current_app as app, render_template, request, url_for
 )
 import requests
 
@@ -8,7 +10,12 @@ bp = Blueprint('register_with_discovery', __name__, url_prefix='/register_with_d
 @bp.route('/', methods=['POST', 'GET'])
 def register_with_discovery():
     if request.method == 'GET':
-        return render_template('register_with_discovery.html')
+        map_names_list = os.listdir('data/map_data')
+        urls_available_list = [
+            url_for('localize.image_localize', name=map_name)[1:] # Remove the leading slash
+            for map_name in map_names_list
+        ]
+        return render_template('register_with_discovery.html', urls_available_list=urls_available_list)
 
     latitude = float(request.form['latitude'])
     longitude = float(request.form['longitude'])
