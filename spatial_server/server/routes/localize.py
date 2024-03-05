@@ -8,11 +8,10 @@ from spatial_server.hloc_localization import localizer
 
 bp = Blueprint('localize', __name__, url_prefix='/localize')
 
-@bp.route('/image', methods=['POST'])
-def localize():
+@bp.route('/image/<name>', methods=['POST'])
+def image_localize(name):
     # Download an image, save it and localize it against the map
     image = request.files['image']
-    name = request.form.get('name', default='default_map')
     aframe_camera_matrix_world = request.form['aframe_camera_matrix_world']
     aframe_camera_matrix_world = list(map(float, aframe_camera_matrix_world.split(',')))
 
