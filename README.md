@@ -1,13 +1,15 @@
 # spatial-server
 
-An example server that could be used with spatial-client.
+An instance of a localization server. This server is maintained by a "Cartographer". The spatial-server provides support for the following functions:
+
+- Map creation and storage. Maps can be downloaded from this server by content developers.
+- Localization against stored maps.
+- Registration with the server disocvery service.
 
 This repository contains submodules. Clone the repo using:
 ```
 git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 ```
-
-# Using the repo
 
 ## Install dependencies
 
@@ -44,6 +46,19 @@ From the root of this repository, run:
 flask --debug --app spatial_server/server run --host 0.0.0.0 --port 8001
 ```
 
-## Visualizing the map
+# Map creation, registration and localization
 
-Once the video is uploaded using the spatial-client, the map building process starts. The map can be visualized in Blender using my clone of the [BlenderNeuralangelo](https://github.com/SagarB-97/BlenderNeuralangelo) add-on. (The only difference between my clone and the add-on is the directory structure).
+- **Map creation** (URL prefix: `/create_map`)
+    - GET request to `/create_map/` renders a form that can be used to upload materials required for map creation. 
+    - POST request to `create_map/video` (with the video file) starts the map creation process. Currently, we only support map creation from videos using hloc.
+
+- **Registration** (URL prefix: `/register_with_discovery`)
+    - GET request to `/register_with_discovery` renders a form to enter information about the URLs to be registered.
+    - POST request to `/register_with_discovery` requests the server discovery service to update its database.
+
+- **Download** (URL prefix: `/download_map`)
+    - GET request to `/download_map/` renders a form to assist with download.
+    - GET request to `/download_map/<map_name>` downloads the specified map.
+
+- **Localization** (URL prefix: `/localize`)
+    - POST request to `/localize/image/<map_name>` returns the pose corresponding to POSTed image against the map specified in `map_name`.
