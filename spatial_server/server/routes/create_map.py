@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, url_for
 
 from spatial_server.hloc_localization import map_creator
 from spatial_server.server import executor
@@ -24,6 +24,12 @@ def upload_video():
     # Save the uploaded video with the filename 'video.mp4' in the specified folder
     video_path = os.path.join(folder_path, 'video.mp4')
     video.save(video_path)
+
+    # Create a file with the URL that will be used to query against the map
+    with open(os.path.join(folder_path, 'localization_url.txt'), 'w') as f:
+        localization_url = request.url_root \
+            + url_for('localize.image_localize', name=name)[1:] # Remove the leading slash
+        f.write(localization_url)
 
     # Call the map builder function
     executor.submit(map_creator.create_map_from_video, video_path)

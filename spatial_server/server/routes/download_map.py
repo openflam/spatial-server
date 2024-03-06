@@ -24,7 +24,11 @@ def download_map(map_name):
         for filename in os.listdir(images_directory)
     ]
 
-    all_filepaths = point_cloud_filepaths + image_filepaths
+    localizer_url_filepath = [
+        (os.path.join(directory, 'localization_url.txt'), 'localization_url.txt')
+    ]
+
+    all_filepaths = point_cloud_filepaths + image_filepaths + localizer_url_filepath
 
     # Create a zip file of the map data
     # Create a BytesIO object to store the zip file in memory
