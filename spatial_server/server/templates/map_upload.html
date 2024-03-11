@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Map Upload</title>
+</head>
+
+<body>
+    <div class="container-sm position-absolute top-50 start-50 translate-middle">
+        <div class="mb-3">
+            <label for="uploadType" class="form-label">Map data type</label>
+            <select id="uploadType" class="form-control form-select" onchange="renderForm()">
+                <option hidden disabled selected value> -- select an option -- </option>
+                <option value="images">Images</option>
+                <option value="video">Video</option>
+                <option value="realityCapture">Reality Capture</option>
+            </select>
+        </div>
+        <div id="formContainer"></div>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script>
+        function renderForm() {
+            var selectElement = document.getElementById("uploadType");
+            var selectedValue = selectElement.value;
+
+            if (selectedValue === "images") {
+                render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/images_upload.html") | tojson }}
+            } else if (selectedValue === "video") {
+                render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/video_upload.html") | tojson }}
+            } else if (selectedValue === "realityCapture") {
+                render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/reality_capture_upload.html") | tojson }}
+            }
+            $("#formContainer").load(render_template_url);
+        }
+    </script>
+</body>
+
+</html>

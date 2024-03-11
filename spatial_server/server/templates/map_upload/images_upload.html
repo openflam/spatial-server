@@ -1,0 +1,16 @@
+<div class="p-3 mb-2 bg-light text-dark">
+    Zip the images and upload the zipfile. 
+    Pose for each image would be extracted to create a map.
+</div>
+
+<div class="mb-3">
+    <label for="name" class="form-label">Name</label>
+    <input type="text" class="form-control mb-2" id="name" placeholder="ArenaLab">
+    
+    <label for="imagesZip" class="form-label">Images zip</label>
+    <input type="file" class="form-control mb-2" id="imagesZip">
+</div>
+
+<button type="button" class="btn btn-success" onclick="uploadImages()">Submit</button>
+
+<script src="{{ url_for('static', filename = 'scripts/map_upload/images_upload.js') }}"></script>

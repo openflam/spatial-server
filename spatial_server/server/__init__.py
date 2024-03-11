@@ -35,6 +35,9 @@ def create_app(test_config=None):
     from .routes import download_map
     app.register_blueprint(download_map.bp)
 
+    from .routes import render_template
+    app.register_blueprint(render_template.bp)
+
     CORS(app)
 
     return app

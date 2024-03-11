@@ -1,0 +1,24 @@
+<div class="p-3 mb-4 bg-light text-dark">
+    Upload a video file of the physical environment.
+    A percentage of frames would be extracted from the video to create a map.
+</div>
+
+<div class="mb-3">
+    <label for="name" class="form-label">Name</label>
+    <input type="text" class="form-control mb-2" id="name" placeholder="ArenaLab">
+    
+    <label for="video" class="form-label">Video File</label>
+    <input type="file" class="form-control mb-2" id="video">
+
+    <label for="num_frames_perc" class="form-label">Percentage of frames to extract</label>
+    <div class="input-group mb-2">
+        <input type="number" class="form-control" id="num_frames_perc" value="25">
+        <div class="input-group-append">
+            <span class="input-group-text">%</span>
+        </div>
+    </div>
+</div>
+
+<button type="button" class="btn btn-success" onclick="uploadVideo()">Submit</button>
+
+<script src="{{ url_for('static', filename = 'scripts/map_upload/video_upload.js') }}"></script>
