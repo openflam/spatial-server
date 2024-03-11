@@ -51,7 +51,7 @@ def upload_video():
     _create_localization_url_file(name)
 
     # Call the map builder function
-    # executor.submit(map_creator.create_map_from_video, video_path, num_frames_perc)
+    executor.submit(map_creator.create_map_from_video, video_path, num_frames_perc)
 
     return 'Video uploaded and map building started'
 
@@ -69,6 +69,6 @@ def upload_images():
     _create_localization_url_file(name)
     
     # Call the map builder function
-    # executor.submit(map_creator.create_map_from_images, images_folder_path)
+    executor.submit(map_creator.create_map_from_images, images_folder_path)
 
     return 'Images uploaded and map building started'
