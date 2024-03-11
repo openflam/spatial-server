@@ -15,6 +15,7 @@ def show_map_upload_form():
 def upload_video():
     video = request.files['video']
     name = request.form.get('name', default='default_map')
+    num_frames_perc = request.form.get('num_frames_perc', default=0.25, type=float)
 
     # Create the folder if it doesn't exist
     folder_path = os.path.join('data', 'map_data', name)
@@ -32,7 +33,7 @@ def upload_video():
         f.write(localization_url)
 
     # Call the map builder function
-    executor.submit(map_creator.create_map_from_video, video_path)
+    executor.submit(map_creator.create_map_from_video, video_path, num_frames_perc)
 
     return 'Video uploaded and map building started'
 

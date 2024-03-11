@@ -15,25 +15,7 @@ from third_party.hloc.hloc import extract_features, pairs_from_covisibility, mat
 
 from . import config
 
-def create_map_from_video(video_path):
-    # Estimate the number of frames to extract
-    probe = ffmpeg.probe(video_path)
-    video_stream = next(stream for stream in probe['streams'] if stream['codec_type'] == 'video')
-    frame_rate_num, frame_rate_den = video_stream['avg_frame_rate'].split('/')
-    frame_rate = float(frame_rate_num) / float(frame_rate_den)
-    duration = float(video_stream['duration'])
-    num_frames_estimate = duration * frame_rate
-    num_frames_to_extract = int(num_frames_estimate / 4) # Extract 1 frame in every 4 frames
-    print(f"Estimated number of frames to extract: {num_frames_to_extract}")
-
-    # Call ns-process-data
-    ns_process_output_dir = os.path.dirname(video_path)
-    os.system((
-        f'ns-process-data video ' 
-        f'--data {video_path} ' 
-        f'--output_dir {ns_process_output_dir} '
-        f'--num-frames-target {num_frames_to_extract} '
-    ))
+def create_map_from_colmap_data(ns_process_output_dir):
 
     # Build the hloc map and features
 
@@ -106,3 +88,53 @@ def create_map_from_video(video_path):
         print("Reconstruction failed..Error trace:")
         print(e)
 
+def create_map_from_video(video_path, num_frames_perc=25):
+    # Estimate the number of frames to extract
+    probe = ffmpeg.probe(video_path)
+    video_stream = next(stream for stream in probe['streams'] if stream['codec_type'] == 'video')
+    frame_rate_num, frame_rate_den = video_stream['avg_frame_rate'].split('/')
+    frame_rate = float(frame_rate_num) / float(frame_rate_den)
+    duration = float(video_stream['duration'])
+    num_frames_estimate = duration * frame_rate
+    num_frames_to_extract = num_frames_estimate * (num_frames_perc / 100)
+    num_frames_to_extract = int(max(num_frames_to_extract, num_frames_estimate))
+    print(f"Estimated number of frames to extract: {num_frames_to_extract} / {int(num_frames_estimate)}")
+
+    # Call ns-process-data
+    ns_process_output_dir = os.path.dirname(video_path)
+    os.system((
+        f'ns-process-data video ' 
+        f'--data {video_path} ' 
+        f'--output_dir {ns_process_output_dir} '
+        f'--num-frames-target {num_frames_to_extract} '
+    ))
+
+    # Build the hloc map and features
+    create_map_from_colmap_data(ns_process_output_dir)
+
+def create_map_from_reality_capture(data_dir):
+    # TODO: Use reality capture poses
+
+    image_dir = os.path.join(data_dir, 'images')
+
+    # Copy all images with pose information to a new directory
+    image_copy_dir = os.path.join(data_dir, 'images_with_pose')
+    os.makedirs(image_copy_dir, exist_ok=True)
+    for file in os.listdir(image_dir):
+        if file.endswith('.xmp'):
+            image_file = file.replace('.xmp', '.jpg')
+            os.system(f'cp {os.path.join(image_dir, image_file)} {image_copy_dir}')
+    
+    create_map_from_images(image_copy_dir)
+
+def create_map_from_images(image_dir):
+    # Call ns-process-data
+    ns_process_output_dir = os.path.dirname(image_dir)
+    os.system((
+        f'ns-process-data images ' 
+        f'--data {image_dir} ' 
+        f'--output_dir {ns_process_output_dir} '
+    ))
+
+    # Build the hloc map and features
+    create_map_from_colmap_data(ns_process_output_dir)

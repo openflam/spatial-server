@@ -23,8 +23,21 @@
         </div>
 
         <div class="mb-3">
-            <label for="video" class="form-label">Video File</label>
-            <input type="file" class="form-control" id="video">
+            <div class="row">
+                <div class="col">
+                    <label for="video" class="form-label">Video File</label>
+                    <input type="file" class="form-control" id="video">
+                </div>
+                <div class="col">
+                    <label for="num_frames_perc" class="form-label">Percentage of frames to extract</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="num_frames_perc" value="25">
+                        <div class="input-group-append">
+                            <span class="input-group-text">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <button type="button" class="btn btn-success" onclick="uploadVideo()">Submit</button>
