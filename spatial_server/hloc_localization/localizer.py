@@ -97,6 +97,7 @@ def get_hloc_camera_matrix_from_image(img_path, dataset_name):
         matches_path = query_local_match_path,
         features_q_path = query_local_features_path
     )
+    ret['confidence'] = float(log['PnP_ret']['num_inliers'] / log['keypoints_query'].shape[0])
 
     hloc_camera_matrix = None
     if ret['success']:
@@ -122,6 +123,7 @@ def localize(img_path, dataset_name, aframe_camera_matrix_world):
             'success': True,
             'arscene_pose': arscene_pose_matrix,
             'num_inliers': int(ret['num_inliers']),
+            'confidence': ret['confidence'],
         }
     else:
         return {'success': False}
