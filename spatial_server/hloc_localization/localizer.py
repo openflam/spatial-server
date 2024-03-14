@@ -123,7 +123,7 @@ def localize(img_path, dataset_name, aframe_camera_matrix_world):
             'success': True,
             'arscene_pose': arscene_pose_matrix,
             'num_inliers': int(ret['num_inliers']),
-            'confidence': ret['confidence'],
+            'confidence': int(ret['num_inliers']),
         }
     else:
         return {'success': False}
