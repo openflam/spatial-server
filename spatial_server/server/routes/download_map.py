@@ -9,7 +9,9 @@ bp = Blueprint('download_map', __name__, url_prefix='/download_map')
 @bp.route('/<map_name>', methods=['GET'])
 def download_map(map_name):
     directory = os.path.join('data', 'map_data', map_name)
-    hloc_directory = os.path.join(directory, 'hloc_data', 'sfm_reconstruction')
+    hloc_directory = os.path.join(directory, 'hloc_data', 'scaled_sfm_reconstruction')
+    if not os.path.exists(hloc_directory):
+        hloc_directory = os.path.join(directory, 'hloc_data', 'sfm_reconstruction')
     images_directory = os.path.join(directory, 'images_8')
 
     # List of filepaths to include in the zip file with their arc names

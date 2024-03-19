@@ -5,7 +5,7 @@ from pathlib import Path
 import pickle
 import sys
 
-from . import localizer
+from .. import localizer
 
 def get_scale_two_images(img_path_1, img_path_2, dataset_name):
     hloc_camera_matrix_1 = localizer.get_hloc_camera_matrix_from_image(img_path_1, dataset_name)[0]

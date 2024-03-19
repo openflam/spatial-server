@@ -62,3 +62,9 @@ flask --debug --app spatial_server/server run --host 0.0.0.0 --port 8001
 
 - **Localization** (URL prefix: `/localize`)
     - POST request to `/localize/image/<map_name>` returns the pose corresponding to POSTed image against the map specified in `map_name`.
+
+# Scaling SfM model
+
+SfM is inherently scale ambiguous. Maps created using images or video frames needs to to be explicitly scaled to match the real-world. So we need some real world measurements to scale it. In project, we provide a way to scale the SfM reconstruction using camera pose matrices collected from an a-frame spatial client. Use the scripts in `hloc_localization/scale_adjustment` to adjust scale of the reconstruction.
+
+(TODO: Write detailed instructions)

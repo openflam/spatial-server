@@ -36,7 +36,12 @@ def get_hloc_camera_matrix_from_image(img_path, dataset_name):
     dataset = Path(os.path.join('data', 'map_data', dataset_name, 'hloc_data'))
     db_global_descriptors_path = (dataset / global_descriptor_conf['output']).with_suffix('.h5')
     db_local_features_path = (dataset / local_feature_conf['output']).with_suffix('.h5')
-    db_reconstruction = dataset / 'sfm_reconstruction'
+    # Use the scaled reconstruction if it exists
+    db_reconstruction = dataset / 'scaled_sfm_reconstruction'
+    if not db_reconstruction.exists():
+        db_reconstruction = dataset / 'sfm_reconstruction'
+    else:
+        print(f'Using scaled reconstruction at {db_reconstruction}.')
 
     query_image_name = os.path.basename(img_path)
 
