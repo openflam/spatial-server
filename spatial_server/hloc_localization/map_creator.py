@@ -97,7 +97,7 @@ def create_map_from_video(video_path, num_frames_perc=25):
     duration = float(video_stream['duration'])
     num_frames_estimate = duration * frame_rate
     num_frames_to_extract = num_frames_estimate * (num_frames_perc / 100)
-    num_frames_to_extract = int(max(num_frames_to_extract, num_frames_estimate))
+    num_frames_to_extract = int(min(num_frames_to_extract, num_frames_estimate))
     print(f"Estimated number of frames to extract: {num_frames_to_extract} / {int(num_frames_estimate)}")
 
     # Call ns-process-data

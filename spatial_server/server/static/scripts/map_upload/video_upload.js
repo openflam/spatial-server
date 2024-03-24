@@ -1,7 +1,8 @@
 function uploadVideo() {
     const serverAddress = '/create_map/video';
-    const name = document.getElementById('name').value;
-    const videoFile = document.getElementById('video').files[0];
+    var name = document.getElementById('name').value;
+    var videoFile = document.getElementById('video').files[0];
+    var numFramesPerc = document.getElementById('num_frames_perc').value;
 
     if (!name || !videoFile) {
         alert('Please name, and select a video file.');
@@ -11,6 +12,7 @@ function uploadVideo() {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('video', videoFile);
+    formData.append('num_frames_perc', numFramesPerc);
 
     fetch(serverAddress, {
         method: 'POST',

@@ -44,7 +44,7 @@ def show_map_upload_form():
 def upload_video():
     video = request.files['video']
     name = request.form.get('name', default='default_map')
-    num_frames_perc = request.form.get('num_frames_perc', default=0.25, type=float)
+    num_frames_perc = request.form.get('num_frames_perc', default=25, type=float)
 
     folder_path = _create_dataset_directory(name)
     video_path = _save_file(video, folder_path, 'video.mp4')
