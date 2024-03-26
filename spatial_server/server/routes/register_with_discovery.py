@@ -33,7 +33,9 @@ def register_with_discovery():
             'longitude': longitude, 
             'hostname': hostname, 
             'resolution': resolution
-            })
+            },
+        verify=False
+        )
 
     return response.text
 
