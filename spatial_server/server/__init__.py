@@ -4,9 +4,14 @@ from flask import Flask
 from flask_cors import CORS
 
 from .config import Config
+from spatial_server.hloc_localization import load_cache
 
 # Create an executor to run map building in the background
 executor = ProcessPoolExecutor()
+
+# Shared data - data that is shared between requests. 
+# TODO: This is a hack. Find a better way to do this.
+shared_data = {}
 
 def create_app(test_config=None):
     # create and configure the app
@@ -22,6 +27,9 @@ def create_app(test_config=None):
     else:
         # load the test config if passed in
         app.config.from_mapping(test_config)
+    
+    load_cache.load_ml_models(shared_data)
+    load_cache.load_db_data(shared_data)
     
     from .routes import localize
     app.register_blueprint(localize.bp)
