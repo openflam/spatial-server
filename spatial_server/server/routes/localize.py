@@ -30,5 +30,5 @@ def image_localize(name):
 
     # Call the localization function
     pose = localizer.localize(image_path, name, aframe_camera_matrix_world)
-    print("Localizer Result: ", pose)
+    # print("Localizer Result: ", pose)
     return jsonify(pose)
