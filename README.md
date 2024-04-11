@@ -18,7 +18,7 @@ git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 - Create and activate `conda` environment: 
 
     ```
-    conda env create -f environment.yml
+    conda env create -f environment.yaml
     conda activate spatial-server
     ```
 - Install the correct versions of torch, torch vision etc.: 
