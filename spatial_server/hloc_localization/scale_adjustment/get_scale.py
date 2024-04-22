@@ -6,10 +6,11 @@ import pickle
 import sys
 
 from .. import localizer
+from .. import load_cache
 
-def get_scale_two_images(img_path_1, img_path_2, dataset_name):
-    hloc_camera_matrix_1 = localizer.get_hloc_camera_matrix_from_image(img_path_1, dataset_name)[0]
-    hloc_camera_matrix_2 = localizer.get_hloc_camera_matrix_from_image(img_path_2, dataset_name)[0]
+def get_scale_two_images(img_path_1, img_path_2, dataset_name, shared_data):
+    hloc_camera_matrix_1 = localizer.get_hloc_camera_matrix_from_image(img_path_1, dataset_name, shared_data)[0]
+    hloc_camera_matrix_2 = localizer.get_hloc_camera_matrix_from_image(img_path_2, dataset_name, shared_data)[0]
 
     hloc_location_1 = hloc_camera_matrix_1[:3, 3]
     hloc_location_2 = hloc_camera_matrix_2[:3, 3]
@@ -43,11 +44,16 @@ def get_scale_from_query_dir(query_dir):
     for dir in all_queries_dirs:
         img_paths.append(dir + '/query_image.png')
     
+    # Load ML models
+    shared_data = {}
+    load_cache.load_ml_models(shared_data)
+    load_cache.load_db_data(shared_data)
+
     # Get scale for each pair of images
     scales = []
     for i in range(len(img_paths)):
         for j in range(i+1, len(img_paths)):
-            scales.append(get_scale_two_images(img_paths[i], img_paths[j], dataset_name))
+            scales.append(get_scale_two_images(img_paths[i], img_paths[j], dataset_name, shared_data))
     
     print("Scales: ", scales)
 

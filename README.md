@@ -69,6 +69,7 @@ SfM is inherently scale ambiguous. Maps created using images or video frames nee
 
 Commands:
 ```
+python -m spatial_server.hloc_localization.scale_adjustment.get_scale <path_to_query_dir>
 python -m spatial_server.hloc_localization.scale_adjustment.scale_existing_model --model_path <path_to_SfMReconstruction>
 ```
 

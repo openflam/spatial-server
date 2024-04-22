@@ -29,7 +29,7 @@ def _rot_from_qvec(qvec):
     return Rotation.from_quat([qvec[1], qvec[2], qvec[3], qvec[0]])
 
 
-def get_hloc_camera_matrix_from_image(img_path, dataset_name):
+def get_hloc_camera_matrix_from_image(img_path, dataset_name, shared_data=shared_data):
 
     local_feature_conf = extract_features.confs[config.LOCAL_FEATURE_EXTRACTOR]
     global_descriptor_conf = extract_features.confs[config.GLOBAL_DESCRIPTOR_EXTRACTOR]
