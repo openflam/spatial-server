@@ -74,3 +74,11 @@ python -m spatial_server.hloc_localization.scale_adjustment.scale_existing_model
 ```
 
 (TODO: Write detailed instructions)
+
+# Aligning the point cloud
+
+The point cloud generated is not necessarily aligned with the gravity axis and may be randomly rotated. This makes it difficult to use the map. Use the following commands to align the model using Manhattan-world alignment.
+
+```
+python -m spatial_server.hloc_localization.map_aligner --model_path <path_to_colmap_model> --images_path <path_to_images_dir>
+```
