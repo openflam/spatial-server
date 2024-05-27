@@ -13,6 +13,16 @@ git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 
 ## Install dependencies
 
+### Docker-based installation (Recommended)
+
+1. Install docker engine. For Ubuntu, use instructions [from here](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
+2. Install nvidia-container-toolkit. For Ubuntu, use instructions [from here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installing-with-apt).
+3. Run `nvidia-smi --query-gpu=compute_cap --format=csv` to get the CUDA Architecture. Change the `CUDA_ARCHITECTURES` ARG in the Dockerfile (without the dot).
+3. `cd spatial-server` and run `docker compose up`.
+
+
+### Conda-based installation (OLD)
+
 - Install COLMAP and ffmpeg. Make sure COLMAP can use your GPU.
 - After cloning, `cd spatial-server` 
 - Create and activate `conda` environment: 
