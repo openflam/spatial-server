@@ -3,6 +3,8 @@ import pycolmap
 import open3d as o3d
 import os
 from datetime import datetime
+from pathlib import Path
+
 
 from scale_adjustment import read_write_model
 
@@ -26,10 +28,12 @@ def pythonmapthing(model_path):
     # images = np.array([image for image_id, image in reconstruction.images.items()])
 
     cameras, images, points3D = read_write_model.read_model(model_path)
+    # import pdb; pdb.set_trace()
+    pointids = np.array([point.id for point in points3D.values()])
+    points = np.array([point.xyz for point in points3D.values()])
 
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(points)
-    pcd.colors = o3d.utility.Vector3dVector(colors)
     # o3d.visualization.draw_geometries([pcd])
 
     old_size = len(pcd.points)
@@ -55,31 +59,22 @@ def pythonmapthing(model_path):
     processed_points = np.asarray(processed_pcd.points)
     mask = np.isin(points, processed_points).all(axis=1)
     processed_pointids = pointids[mask]
-    processed_colors = np.asarray(processed_pcd.colors) * 255.0
+    new_points3D = {}
+    
+    for id in points3D:
+        if id in processed_pointids:
+            new_points3D[id] = points3D[id]
 
-    for image in images:
-        import pdb; pdb.set_trace()
-        print(image.points2D)
-        point3d_ids = np.array([p.point3D_id for p in image.points2D])
-        print(point3d_ids)
-        mask = np.isin(point3d_ids, processed_pointids)
-        processed_points2D = np.array(image.points2D)[mask].tolist()
-        image.points2D = processed_points2D
+    for id, image in images.items():
+        image.point3D_ids
+        for i in range(len(image.point3D_ids)):
+            if (i != -1) or (image.point3D_ids[i] not in processed_pointids):
+                image.point3D_ids[i] = -1
 
-
-
-    # Create a new COLMAP reconstruction
-    new_reconstruction = pycolmap.Reconstruction()
-
-
-
-    # Save the new COLMAP reconstruction
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_folder = f"/Users/michael/Desktop/Map-Thingy/map/new_point_cloud_{timestamp}"
-    os.makedirs(output_folder, exist_ok=True)
-
-    # Save the new COLMAP reconstruction in the new folder
-    new_reconstruction.write(output_folder)
+    model_path = Path(model_path)
+    output_model_path = model_path.parent / 'scaled_sfm_reconstruction'
+    os.makedirs(output_model_path, exist_ok=True)
+    _ = read_write_model.write_model(cameras, images, new_points3D, output_model_path)
 
 def main():
     pythonmapthing("/Users/michael/Desktop/Map-Thingy/map/point_cloud")

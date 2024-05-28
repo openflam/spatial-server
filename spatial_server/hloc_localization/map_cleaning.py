@@ -51,17 +51,8 @@ def pythonmapthing(model_path):
     processed_points = np.asarray(processed_pcd.points)
     mask = np.isin(points, processed_points).all(axis=1)
     processed_pointids = pointids[mask]
-    processed_colors = np.asarray(processed_pcd.colors) * 255.0
-
-    for image in images:
-        import pdb; pdb.set_trace()
-        print(image.points2D)
-        point3d_ids = np.array([p.point3D_id for p in image.points2D])
-        print(point3d_ids)
-        mask = np.isin(point3d_ids, processed_pointids)
-        processed_points2D = np.array(image.points2D)[mask].tolist()
-        image.points2D = processed_points2D
-
+    # processed_colors = np.asarray(processed_pcd.colors) * 255.0
+        
 
 
     # Create a new COLMAP reconstruction
