@@ -13,7 +13,8 @@ import ffmpeg
 
 from third_party.hloc.hloc import extract_features, pairs_from_covisibility, match_features, triangulation, pairs_from_retrieval, localize_sfm, visualization
 
-from . import config
+from . import config, load_cache
+from spatial_server.server import shared_data
 
 def create_map_from_colmap_data(ns_process_output_dir):
 
@@ -112,6 +113,9 @@ def create_map_from_video(video_path, num_frames_perc=25):
     # Build the hloc map and features
     create_map_from_colmap_data(ns_process_output_dir)
 
+    # Add the map to shared data
+    load_cache.load_db_data(shared_data)
+
 def create_map_from_reality_capture(data_dir):
     # TODO: Use reality capture poses
 
@@ -138,3 +142,6 @@ def create_map_from_images(image_dir):
 
     # Build the hloc map and features
     create_map_from_colmap_data(ns_process_output_dir)
+
+    # Add the map to shared data
+    load_cache.load_db_data(shared_data)

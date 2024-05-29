@@ -53,6 +53,8 @@ def load_db_data(shared_data):
     """
     Load map data into the shared_data dictionary
     """
+    if not os.path.exists('data/map_data'):
+        return
     map_names_list = os.listdir('data/map_data')
     shared_data['db_global_descriptors'] = {}
     shared_data['db_image_names'] = {}

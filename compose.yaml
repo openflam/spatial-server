@@ -8,7 +8,9 @@ services:
     volumes:
       - ./:/code
     ports:
-      - 8001:8001
+      - 8001:8001 # Flask server
+      - 8888:8888 # Jupyter notebook
+    ipc: host
     deploy:
       resources:
         reservations:

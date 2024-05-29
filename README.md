@@ -11,14 +11,22 @@ This repository contains submodules. Clone the repo using:
 git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 ```
 
-## Install dependencies
+## Install dependencies and run server
 
 ### Docker-based installation (Recommended)
 
 1. Install docker engine. For Ubuntu, use instructions [from here](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
 2. Install nvidia-container-toolkit. For Ubuntu, use instructions [from here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installing-with-apt).
 3. Run `nvidia-smi --query-gpu=compute_cap --format=csv` to get the CUDA Architecture. Change the `CUDA_ARCHITECTURES` ARG in the Dockerfile (without the dot).
-3. `cd spatial-server` and run `docker compose up`.
+3. `cd spatial-server`
+
+#### Running the server
+Run `docker compose up --detach`. To print logs, run `docker compose logs`. To shutdown, `docker compose down`.
+
+To run jupyter lab inside the docker container: 
+- Get the container ID by running `docker ps`.
+- Attach the terminal to the container bu running: `docker exec -it <container_id> bash`.
+- Once inside the container, run: `jupyter lab --allow-root --ip 0.0.0.0`.
 
 
 ### Conda-based installation (OLD)
@@ -50,7 +58,7 @@ git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
     ```
 
 
-## Start the server
+#### Start the server
 From the root of this repository, run:
 ```
 flask --debug --app spatial_server/server run --host 0.0.0.0 --port 8001
