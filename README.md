@@ -100,3 +100,10 @@ The point cloud generated is not necessarily aligned with the gravity axis and m
 ```
 python -m spatial_server.hloc_localization.map_aligner --model_path <path_to_colmap_model> --images_path <path_to_images_dir>
 ```
+# Map Cleaning
+
+The point cloud created using the `map_creator` script generally has extraneous points. Use the script `map_cleaning` to automatically remove outliers and align the maps ground. It also saves the model as PCD file.
+
+```
+python spatial_server/hloc_localization/map_cleaning.py <path_to_colmap_model>
+```
