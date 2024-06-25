@@ -100,7 +100,11 @@ COPY ./third_party/hloc/requirements.txt /dependencies/requirements.txt
 RUN pip install -r /dependencies/requirements.txt
 
 # Uninstall numpy 2.0 and install numpy 1.26.4 as cv2 is not compatible with numpy 2.0
+RUN pip uninstall numpy -y
 RUN pip install numpy==1.26.4
+
+# Install unzip
+RUN apt install unzip -y
 
 # Generate self-signed certificate
 RUN mkdir /ssl

@@ -63,7 +63,7 @@ def upload_images():
     folder_path = _create_dataset_directory(name)
     images_zip_path = _save_file(images_zip, folder_path, 'images.zip')
 
-    images_folder_path = os.path.join(folder_path, 'images')
+    images_folder_path = os.path.join(folder_path, 'images_orig')
     _extract_zip(images_zip_path, images_folder_path)
 
     _create_localization_url_file(name)
