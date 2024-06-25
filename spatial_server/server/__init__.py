@@ -46,6 +46,9 @@ def create_app(test_config=None):
     from .routes import render_template
     app.register_blueprint(render_template.bp)
 
+    from .routes import save_image_pose
+    app.register_blueprint(save_image_pose.bp)
+
     CORS(app)
 
     return app

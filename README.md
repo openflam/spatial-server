@@ -83,7 +83,13 @@ flask --debug --app spatial_server/server run --host 0.0.0.0 --port 8001
 
 # Scaling SfM model
 
-SfM is inherently scale ambiguous. Maps created using images or video frames needs to to be explicitly scaled to match the real-world. So we need some real world measurements to scale it. In project, we provide a way to scale the SfM reconstruction using camera pose matrices collected from an a-frame spatial client. Use the scripts in `hloc_localization/scale_adjustment` to adjust scale of the reconstruction.
+SfM is inherently scale ambiguous. Maps created using images or video frames needs to to be explicitly scaled to match the real-world. So we need some real world measurements to scale it. In project, we provide a way to scale the SfM reconstruction using camera pose matrices collected from an a-frame spatial client. 
+
+## Application to collect images with pose
+
+We have built an aframe-based application that can send camera images along with the camera pose to the server. On a phone browser, open `/save_image_pose` page and then select the map for which images along with the WebXR pose is to be collected. Click on "Collect Image" button. You will then be redirected to an application that can capture images and send them to the server.
+
+Use the scripts in `hloc_localization/scale_adjustment` to adjust scale of the reconstruction.
 
 Commands:
 ```

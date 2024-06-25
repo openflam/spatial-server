@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <style>
+        /* By default, hide the DOM Overlay element. */
+        #overlay {
+            display: none;
+        }
+
+        /* Show the DOM Overlay element while active (:xr-overlay pseudoclass) */
+        #overlay:xr-overlay {
+            display: initial;
+        }
+
+        #capture-button {
+            position: absolute;
+            right: 40px;
+            bottom: 40px;
+            background: rgba(127, 127, 127, 0.25);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 6px 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="overlay">
+        <button id="capture-button">Capture</button>
+    </div>
+    <a-scene webxr="optionalFeatures: dom-overlay; overlayElement: #overlay" xr-mode-ui="XRMode: xr">
+        <a-entity id="camera" camera look-controls></a-entity>
+    </a-scene>
+
+    <!-- Declare mapname to be used by the javascript to save images to the correct map-->
+    <script>
+        var mapname = {{ mapname | tojson}};
+    </script>
+    <script src="{{ url_for('static', filename = 'scripts/aframe_data_collection/utils.js') }}"></script>
+    <script src="{{ url_for('static', filename = 'scripts/aframe_data_collection/camera_frames_sender.js') }}"></script>
+</body>
+
+</html>
