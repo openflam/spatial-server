@@ -5,7 +5,8 @@ from pathlib import Path
 import numpy as np
 import open3d as o3d
 
-from scale_adjustment import read_write_model
+from .scale_adjustment import read_write_model
+from .localizer import _rot_from_qvec, _homogenize
 
 
 def convert_colmap_to_pcd(points3D_colmap, downsample=True, crop_y=0.33):
@@ -35,6 +36,23 @@ def convert_colmap_to_pcd(points3D_colmap, downsample=True, crop_y=0.33):
         pcd = pcd.crop(cropped_aabb)
     
     return pcd
+
+def _elevate_existing_reconstruction(model_path, avg):
+    cameras, images, points3D = read_write_model.read_model(model_path)
+    for id in points3D:
+        points3D[id].xyz[2] += avg
+    
+    for id in images:
+        tvec = images[id].tvec
+        qvec = images[id].qvec
+        camera_pose_matrix = np.linalg.inv(_homogenize(_rot_from_qvec(qvec).as_matrix(), tvec))
+        camera_pose_matrix[2][3] += avg # Elevate z-axis of the camera pose
+        tvec_new = np.linalg.inv(camera_pose_matrix)[:3,3]
+        for i in range(3):
+            images[id].tvec[i] = tvec_new[i]
+    
+    read_write_model.write_model(cameras, images, points3D, model_path)
+
 
 def clean_map(model_path):
     """
@@ -66,7 +84,7 @@ def clean_map(model_path):
     # Remove references to points that were removed
     for id, image in images.items():
         for i in range(len(image.point3D_ids)):
-            if (i != -1) or (image.point3D_ids[i] not in processed_pointids):
+            if (image.point3D_ids[i] != -1) or (image.point3D_ids[i] not in processed_points):
                 image.point3D_ids[i] = -1
 
     # Elevate the map to the ground level
@@ -124,6 +142,9 @@ def clean_map(model_path):
     output_model_path = model_path.parent / 'cleaned_map'
     os.makedirs(output_model_path, exist_ok=True)
     read_write_model.write_model(cameras, images, new_points3D, output_model_path)
+
+    # Elevate existing reconstruction
+    _elevate_existing_reconstruction(model_path, avg)
 
     # Save as PCD
     pcd = convert_colmap_to_pcd(new_points3D, downsample=True, crop_y=1)
