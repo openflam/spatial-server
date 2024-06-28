@@ -64,11 +64,15 @@ def load_db_data(shared_data):
     # Load global descriptors for all maps
     global_descriptor_conf = extract_features.confs[config.GLOBAL_DESCRIPTOR_EXTRACTOR]
     for dataset_name in map_names_list:
-        dataset = Path(os.path.join('data', 'map_data', dataset_name, 'hloc_data'))
-        db_global_descriptors_path = (dataset / global_descriptor_conf['output']).with_suffix('.h5')
-        db_image_names = np.array(list_h5_names(db_global_descriptors_path))
-        db_global_descriptors = pairs_from_retrieval.get_descriptors(db_image_names, db_global_descriptors_path)
-        db_global_descriptors = db_global_descriptors.to(device)
-        shared_data['db_global_descriptors'][dataset_name] = db_global_descriptors
-        shared_data['db_image_names'][dataset_name] = db_image_names
-        print(f'Loaded global descriptors for {dataset_name}')
+        try:
+            dataset = Path(os.path.join('data', 'map_data', dataset_name, 'hloc_data'))
+            db_global_descriptors_path = (dataset / global_descriptor_conf['output']).with_suffix('.h5')
+            db_image_names = np.array(list_h5_names(db_global_descriptors_path))
+            db_global_descriptors = pairs_from_retrieval.get_descriptors(db_image_names, db_global_descriptors_path)
+            db_global_descriptors = db_global_descriptors.to(device)
+            shared_data['db_global_descriptors'][dataset_name] = db_global_descriptors
+            shared_data['db_image_names'][dataset_name] = db_image_names
+            print(f'Loaded global descriptors for {dataset_name}')
+        except Exception as e:
+            print(f'Error loading global descriptors for {dataset_name}: {e}')
+            continue
