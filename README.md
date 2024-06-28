@@ -93,7 +93,7 @@ Use the scripts in `hloc_localization/scale_adjustment` to adjust scale of the r
 
 Commands:
 ```
-python -m spatial_server.hloc_localization.scale_adjustment.get_scale <path_to_query_dir>
+python -m spatial_server.hloc_localization.scale_adjustment.get_scale <path_to_query_dir> <dataset_name>
 python -m spatial_server.hloc_localization.scale_adjustment.scale_existing_model --model_path <path_to_SfMReconstruction>
 ```
 

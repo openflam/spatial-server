@@ -8,9 +8,18 @@ import sys
 from .. import localizer
 from .. import load_cache
 
-def get_scale_two_images(img_path_1, img_path_2, dataset_name, shared_data):
-    hloc_camera_matrix_1 = localizer.get_hloc_camera_matrix_from_image(img_path_1, dataset_name, shared_data)[0]
-    hloc_camera_matrix_2 = localizer.get_hloc_camera_matrix_from_image(img_path_2, dataset_name, shared_data)[0]
+def get_scale_two_images(img_path_1, img_path_2, dataset_name, shared_data, pose_cache):
+    if img_path_1 not in pose_cache:
+        hloc_camera_matrix_1 = localizer.get_hloc_camera_matrix_from_image(img_path_1, dataset_name, shared_data)[0]
+        pose_cache[img_path_1] = hloc_camera_matrix_1
+    else:
+        hloc_camera_matrix_1 = pose_cache[img_path_1]
+    
+    if img_path_2 not in pose_cache:
+        hloc_camera_matrix_2 = localizer.get_hloc_camera_matrix_from_image(img_path_2, dataset_name, shared_data)[0]
+        pose_cache[img_path_2] = hloc_camera_matrix_2
+    else:
+        hloc_camera_matrix_2 = pose_cache[img_path_2]
 
     hloc_location_1 = hloc_camera_matrix_1[:3, 3]
     hloc_location_2 = hloc_camera_matrix_2[:3, 3]
@@ -37,8 +46,7 @@ def get_scale_two_images(img_path_1, img_path_2, dataset_name, shared_data):
 
     return scale
 
-def get_scale_from_query_dir(query_dir):
-    dataset_name = query_dir.split('/')[-1]
+def get_scale_from_query_dir(query_dir, dataset_name):
     all_queries_dirs = glob.glob(query_dir + '/*')
     img_paths = []
     for dir in all_queries_dirs:
@@ -51,9 +59,10 @@ def get_scale_from_query_dir(query_dir):
 
     # Get scale for each pair of images
     scales = []
+    pose_cache = {}
     for i in range(len(img_paths)):
         for j in range(i+1, len(img_paths)):
-            scales.append(get_scale_two_images(img_paths[i], img_paths[j], dataset_name, shared_data))
+            scales.append(get_scale_two_images(img_paths[i], img_paths[j], dataset_name, shared_data, pose_cache))
     
     print("Scales: ", scales)
 
@@ -72,8 +81,9 @@ def get_scale_from_query_dir(query_dir):
 if __name__ == '__main__':
     # Read the image paths and dataset name from the command line
     query_dir = sys.argv[1]
+    dataset_name = sys.argv[2]
 
-    scale = get_scale_from_query_dir(query_dir)
+    scale = get_scale_from_query_dir(query_dir, dataset_name)
 
     print("Scale: ", scale)
 
