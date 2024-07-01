@@ -7,6 +7,7 @@
 ##########################################################
 
 import os
+import subprocess
 from pathlib import Path
 
 import ffmpeg
@@ -103,12 +104,12 @@ def create_map_from_video(video_path, num_frames_perc=25):
 
     # Call ns-process-data
     ns_process_output_dir = os.path.dirname(video_path)
-    os.system((
-        f'ns-process-data video ' 
-        f'--data {video_path} ' 
-        f'--output_dir {ns_process_output_dir} '
-        f'--num-frames-target {num_frames_to_extract} '
-    ))
+    subprocess.run([
+        'ns-process-data', 'video', 
+        '--data', str(video_path), 
+        '--output_dir', str(ns_process_output_dir),
+        '--num-frames-target', str(num_frames_to_extract)
+    ])
 
     # Build the hloc map and features
     create_map_from_colmap_data(ns_process_output_dir)
@@ -127,18 +128,18 @@ def create_map_from_reality_capture(data_dir):
     for file in os.listdir(image_dir):
         if file.endswith('.xmp'):
             image_file = file.replace('.xmp', '.jpg')
-            os.system(f'cp {os.path.join(image_dir, image_file)} {image_copy_dir}')
+            subprocess.run(['cp', f'{os.path.join(image_dir, image_file)}', str(image_copy_dir)])
     
     create_map_from_images(image_copy_dir)
 
 def create_map_from_images(image_dir):
     # Call ns-process-data
     ns_process_output_dir = os.path.dirname(image_dir)
-    os.system((
-        f'ns-process-data images ' 
-        f'--data {image_dir} ' 
-        f'--output_dir {ns_process_output_dir} '
-    ))
+    subprocess.run([
+        'ns-process-data', 'images', 
+        '--data', str(image_dir), 
+        '--output_dir', str(ns_process_output_dir)
+    ])
 
     # Build the hloc map and features
     create_map_from_colmap_data(ns_process_output_dir)

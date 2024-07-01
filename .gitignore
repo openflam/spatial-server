@@ -16,3 +16,7 @@ build/
 *.egg-info/
 
 .vscode/
+
+# Ignore notebook uses for testing
+temp.ipynb
+.ipynb_checkpoints/

@@ -11,6 +11,7 @@ services:
       - 8001:8001 # Flask server
       - 8888:8888 # Jupyter notebook
     ipc: host
+    shm_size: 20g
     deploy:
       resources:
         reservations:
