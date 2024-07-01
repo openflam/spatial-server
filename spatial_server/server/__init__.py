@@ -1,4 +1,5 @@
 from concurrent.futures import ProcessPoolExecutor
+import multiprocessing
 
 from flask import Flask
 from flask_cors import CORS
@@ -7,7 +8,7 @@ from .config import Config
 from spatial_server.hloc_localization import load_cache
 
 # Create an executor to run map building in the background
-executor = ProcessPoolExecutor()
+executor = ProcessPoolExecutor(mp_context=multiprocessing.get_context("spawn"))
 
 # Shared data - data that is shared between requests. 
 # TODO: This is a hack. Find a better way to do this.
