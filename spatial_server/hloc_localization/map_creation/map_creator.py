@@ -14,8 +14,9 @@ import ffmpeg
 
 from third_party.hloc.hloc import extract_features, pairs_from_covisibility, match_features, triangulation, pairs_from_retrieval, localize_sfm, visualization
 
-from . import config, load_cache
+from .. import config, load_cache
 from spatial_server.server import shared_data
+from . import map_aligner
 
 def create_map_from_colmap_data(ns_process_output_dir):
 
@@ -89,6 +90,7 @@ def create_map_from_colmap_data(ns_process_output_dir):
     except Exception as e:
         print("Reconstruction failed..Error trace:")
         print(e)
+
 
 def create_map_from_video(video_path, num_frames_perc=25):
     # Estimate the number of frames to extract

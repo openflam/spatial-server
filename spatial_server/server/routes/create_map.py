@@ -2,7 +2,7 @@ import os
 
 from flask import Blueprint, request, render_template, url_for
 
-from spatial_server.hloc_localization import map_creator
+from spatial_server.hloc_localization.map_creation import map_creator
 from spatial_server.server import executor
 
 bp = Blueprint('create_map', __name__, url_prefix='/create_map')

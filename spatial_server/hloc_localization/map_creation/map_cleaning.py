@@ -6,7 +6,7 @@ import numpy as np
 import open3d as o3d
 
 from .scale_adjustment import read_write_model
-from .localizer import _rot_from_qvec, _homogenize
+from ..localizer import _rot_from_qvec, _homogenize
 
 
 def convert_colmap_to_pcd(points3D_colmap, downsample=True, crop_y=0.33):
