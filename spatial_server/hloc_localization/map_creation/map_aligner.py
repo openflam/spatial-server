@@ -1,25 +1,28 @@
 import argparse
 import os
 from pathlib import Path
+import subprocess
 
 import numpy as np
 import pycolmap
 from scipy.spatial.transform import Rotation
 
-def align_colmap_model_manhattan(image_dir, colmap_model_path, method = "MANHATTAN-WORLD"):
-    output_path = Path(colmap_model_path).parent / 'aligned'
+def align_colmap_model_manhattan(image_dir, colmap_model_path, method = "MANHATTAN-WORLD", output_path = None):
+    if output_path is None:
+        print("Output path not provided. Overwriting input model.")
+        output_path = colmap_model_path
 
     if not output_path.exists():
         os.makedirs(output_path)
 
-    align_command = (
-        f'colmap model_orientation_aligner '
-        f'--image_path {image_dir} '
-        f'--input_path {colmap_model_path} '
-        f'--output_path {output_path} '
-        f'--method {method}'
-    )
-    os.system(align_command)
+    align_command = [
+        'colmap', 'model_orientation_aligner',
+        '--image_path', f'{image_dir}',
+        '--input_path', f'{colmap_model_path}',
+        '--output_path', f'{output_path}',
+        '--method', f'{method}'
+    ]
+    subprocess.run(align_command)
     rotate_existing_model(output_path)  # Rotate by -90 degrees x axis by default
 
     return output_path

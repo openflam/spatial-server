@@ -16,7 +16,7 @@ from third_party.hloc.hloc import extract_features, pairs_from_covisibility, mat
 
 from .. import config, load_cache
 from spatial_server.server import shared_data
-from . import map_aligner
+from . import map_aligner, map_cleaner
 
 def create_map_from_colmap_data(ns_process_output_dir):
 
@@ -90,6 +90,19 @@ def create_map_from_colmap_data(ns_process_output_dir):
     except Exception as e:
         print("Reconstruction failed..Error trace:")
         print(e)
+        return
+    
+    # Align the model using Manhattan
+    print("Aligning the model using Manhattan..")
+    map_aligner.align_colmap_model_manhattan(image_dir, sfm_reconstruction_path, output_path=Path(sfm_reconstruction_path.parent) / 'aligned')
+    
+    # Elevate the model to ground level
+    print("Elevate map to ground level..")
+    map_cleaner.elevate_existing_reconstruction(sfm_reconstruction_path, output_path=Path(sfm_reconstruction_path).parent / 'elevated')
+    
+    # Clean the map by removing outliers and save it as a PCD
+    print("Cleaning the map..")
+    map_cleaner.clean_map(sfm_reconstruction_path)
 
 
 def create_map_from_video(video_path, num_frames_perc=25):
