@@ -20,12 +20,6 @@ def load_ml_models(shared_data):
     """
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    # Set torch hub directory
-    torch_hub_dir = Path('data/torch_hub')
-    if not torch_hub_dir.exists():
-        torch_hub_dir.mkdir(parents=True)
-    torch.hub.set_dir(str(torch_hub_dir))
-
     # Load global memory - Common data across all maps
 
     # Load local feature extractor model (Superpoint)

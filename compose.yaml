@@ -12,6 +12,8 @@ services:
       - 8888:8888 # Jupyter notebook
     ipc: host
     shm_size: 20g
+    environment:
+      - TORCH_HOME=/code/data/torch_hub
     deploy:
       resources:
         reservations:
