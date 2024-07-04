@@ -69,6 +69,8 @@ def elevate_existing_reconstruction(model_path, output_path=None):
     
     if output_path is None:
         output_path = model_path
+    if not output_path.exists():
+        output_path.mkdir(parents=True)
     read_write_model.write_model(cameras, images, points3D, output_path)
 
 def clean_map(model_path, voxel_downsample=True, crop_y=0.33):

@@ -16,16 +16,23 @@ from third_party.hloc.hloc import extract_features, pairs_from_covisibility, mat
 
 from .. import config, load_cache
 from spatial_server.server import shared_data
-from . import map_aligner, map_cleaner
+from . import map_aligner, map_cleaner, kiri_engine
 
-def create_map_from_colmap_data(ns_process_output_dir):
+def create_map_from_colmap_data(ns_process_output_dir = None, colmap_model_path = None, image_dir = None):
 
     # Build the hloc map and features
+    assert ns_process_output_dir is not None or (colmap_model_path is not None and image_dir is not None), \
+        "Either ns_process_output_dir or (colmap_model_path and image_dir) must be provided"
 
     ## Define directories
-    dataset = Path(ns_process_output_dir)
-    image_dir = dataset / 'images'
-    colmap_model_path = dataset / 'colmap/sparse/0'
+    if ns_process_output_dir is not None:
+        dataset = Path(ns_process_output_dir)
+        image_dir = dataset / 'images'
+        colmap_model_path = dataset / 'colmap/sparse/0'
+    else:
+        colmap_model_path = Path(colmap_model_path)
+        image_dir = Path(image_dir)
+        dataset = Path(image_dir).parent
 
     hloc_output_dir = dataset / 'hloc_data/'
     sfm_pairs_path = hloc_output_dir / 'sfm-pairs-covis20.txt' # Pairs used for SfM reconstruction
@@ -158,6 +165,13 @@ def create_map_from_images(image_dir):
 
     # Build the hloc map and features
     create_map_from_colmap_data(ns_process_output_dir)
+    
+    # Add the map to shared data
+    load_cache.load_db_data(shared_data)
 
+
+def create_map_from_kiri_engine_output(data_dir):
+    kiri_engine.build_map_from_kiri_output(data_dir)
+    
     # Add the map to shared data
     load_cache.load_db_data(shared_data)

@@ -22,7 +22,7 @@ def align_colmap_model_manhattan(image_dir, colmap_model_path, method = "MANHATT
         '--output_path', f'{output_path}',
         '--method', f'{method}'
     ]
-    subprocess.run(align_command)
+    subprocess.run(align_command, capture_output=True)
     rotate_existing_model(output_path)  # Rotate by -90 degrees x axis by default
 
     return output_path
