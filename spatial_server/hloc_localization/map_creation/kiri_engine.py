@@ -78,6 +78,9 @@ def _update_cameras_database(camera_id, camera_model, width, height, params, db_
             False,
         ),
     )
+    conn.commit()
+    conn.close()
+    
 
 def _update_images_database(camera_id, db_path):
     """
@@ -101,6 +104,7 @@ def _prepare_images_file(transforms_json, output_directory,
     for idx, frame in enumerate(transforms_json['frames']):
         img_name = frame['file_path'].split('/')[-1]
         c2w = np.array(frame['transform_matrix'])
+        c2w[0:3, 1:3] *= -1
         w2c = np.linalg.inv(c2w)
         rotmat = w2c[:3,:3]
         qx, qy, qz, qw = Rotation.from_matrix(rotmat).as_quat()
