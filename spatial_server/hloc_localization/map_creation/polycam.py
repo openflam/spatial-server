@@ -205,7 +205,6 @@ def _delete_images_without_correspondences(db_path, input_recon_path, output_rec
         '--output_path', f'{output_recon_path}',
         '--image_ids_path', f'{image_ids_to_delete_filepath}'
     ]
-    images_deleter_command = " ".join(images_deleter_command)
     run_command(images_deleter_command)
 
 
@@ -225,10 +224,10 @@ def build_map_from_polycam_output(polycam_data_directory):
     hloc_data_directory = Path(polycam_data_directory).parent / 'hloc_data'
 
     # Call nsprocess data
-    subprocess.run([
+    run_command([
         'ns-process-data', 'polycam',
-        '--data', polycam_data_directory,
-        '--output-dir', ns_data_directory,
+        '--data', f'{polycam_data_directory}',
+        '--output-dir', f'{ns_data_directory}',
         '--min-blur-score', '0',
     ])
 
@@ -252,7 +251,6 @@ def build_map_from_polycam_output(polycam_data_directory):
         '--database_path', f'{colmap_directory}/database.db',
         '--image_path', f'{ns_data_directory}/images'
     ]
-    extract_features_command = " ".join(extract_features_command)
     print("Extracting features...")
     run_command(extract_features_command)
 
@@ -291,7 +289,6 @@ def build_map_from_polycam_output(polycam_data_directory):
         'colmap', 'exhaustive_matcher',
         '--database_path', f'{colmap_directory}/database.db'
     ]
-    matcher_command = " ".join(matcher_command)
     print("Matching features...")
     run_command(matcher_command)
     
@@ -307,10 +304,9 @@ def build_map_from_polycam_output(polycam_data_directory):
         'colmap', 'point_triangulator',
         '--database_path', f'{colmap_directory}/database.db',
         '--image_path', f'{ns_data_directory}/images',
-        '--input_path', init_recon_with_deleted_imgs_directory,
-        '--output_path', final_recon_output_directory
+        '--input_path', f'{init_recon_with_deleted_imgs_directory}',
+        '--output_path', f'{final_recon_output_directory}'
     ]
-    triangulation_command = " ".join(triangulation_command)
     print("Triangulating points...")
     run_command(triangulation_command)
 
