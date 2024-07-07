@@ -23,6 +23,8 @@ git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 #### Running the server
 Run `docker compose up --detach`. To print logs, run `docker compose logs`. To shutdown, `docker compose down`.
 
+**Note**: If you're making code changes, to ensure that the code changes are reflected in the docker, run: `docker compose up --detach --force-recreate --renew-anon-volumes`.
+
 To run jupyter lab inside the docker container: 
 - Get the container ID by running `docker ps`.
 - Attach the terminal to the container bu running: `docker exec -it <container_id> bash`.

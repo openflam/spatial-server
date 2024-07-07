@@ -8,6 +8,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from . import map_creator
+from .utils import run_command
 
 
 def _prepare_cameras_file(transforms_json, output_directory):
@@ -128,6 +129,8 @@ def _update_cameras_db(db_path, cameras_info):
 
     conn.commit()
     conn.close()
+    
+    print(f"Updated cameras database. Added {len(cameras_info)} cameras.")
 
 
 def _update_images_db(db_path, imgname_to_imgid, imgname_to_cameraid):
@@ -149,13 +152,73 @@ def _update_images_db(db_path, imgname_to_imgid, imgname_to_cameraid):
     conn.close()
 
 
+def _get_pair_and_image_ids(db_path):
+    conn = sqlite3.connect(db_path)
+    cur = conn.cursor()
+    
+    sql_query = """SELECT pair_id from two_view_geometries WHERE rows > 0;"""
+    cur.execute(sql_query)
+    pair_ids = cur.fetchall()
+
+    sql_query = """SELECT image_id from images;"""
+    cur.execute(sql_query)
+    image_ids = cur.fetchall()
+
+    conn.close()
+
+    pair_ids = [id[0] for id in pair_ids]
+    image_ids = [id[0] for id in image_ids]
+    return pair_ids, image_ids
+
+def _pair_id_to_image_ids(pair_id):
+    image_id2 = pair_id % 2147483647
+    image_id1 = (pair_id - image_id2) / 2147483647
+    return int(image_id1), int(image_id2)
+
+def _get_images_without_correspondences(db_path):
+    pair_ids, img_ids = _get_pair_and_image_ids(db_path)
+
+    images_with_pairs = set()
+    for pair_id in pair_ids:
+        id1, id2 = _pair_id_to_image_ids(pair_id)
+        images_with_pairs.add(id1)
+        images_with_pairs.add(id2)
+    all_image_ids = set(img_ids)
+    
+    imgs_without_correspodences = all_image_ids - images_with_pairs
+    return imgs_without_correspodences
+
+
+def _delete_images_without_correspondences(db_path, input_recon_path, output_recon_path):
+    image_ids_to_delete = _get_images_without_correspondences(db_path)
+    image_ids_to_delete_str = '\n'.join(map(str, image_ids_to_delete))
+
+    image_ids_to_delete_filepath = Path(db_path).parent / 'images_to_delete.txt'
+    with open(image_ids_to_delete_filepath, 'w') as f:
+        f.write(image_ids_to_delete_str)
+    
+    print("Deleting images: ", image_ids_to_delete)
+    os.makedirs(output_recon_path, exist_ok = True)
+    images_deleter_command = [
+        'colmap', 'image_deleter',
+        '--input_path', f'{input_recon_path}',
+        '--output_path', f'{output_recon_path}',
+        '--image_ids_path', f'{image_ids_to_delete_filepath}'
+    ]
+    images_deleter_command = " ".join(images_deleter_command)
+    run_command(images_deleter_command)
+
+
 def build_map_from_polycam_output(polycam_data_directory):
     # Define directories
     ns_data_directory = Path(polycam_data_directory).parent / 'ns_data'
+    images_directory = ns_data_directory / 'images'
 
     colmap_directory = Path(polycam_data_directory).parent / 'colmap_known_poses'
      # Initial dummy reconstruction with just the camera poses
     init_recon_output_directory = f'{colmap_directory}/sparse/0'
+    # Initial dummy reconstruction where images with no correspondences are removed
+    init_recon_with_deleted_imgs_directory = f'{colmap_directory}/sparse/0_with_deleted_imgs'
      # Final reconstruction with triangulated points
     final_recon_output_directory = f'{colmap_directory}/sparse/1'
 
@@ -165,16 +228,33 @@ def build_map_from_polycam_output(polycam_data_directory):
     subprocess.run([
         'ns-process-data', 'polycam',
         '--data', polycam_data_directory,
-        '--output-dir', ns_data_directory
+        '--output-dir', ns_data_directory,
+        '--min-blur-score', '0',
     ])
+
+    # Read transforms.json file
+    json_file_path = f'{ns_data_directory}/transforms.json'
+    with open(json_file_path, 'r') as f:
+        transforms_json = json.load(f)
+    
+    # ns-process-data removes some images that have low blur scores from transforms.json.
+    # Remove these images from the images directory.
+    existing_images = os.listdir(images_directory)
+    images_in_transforms = [frame['file_path'].split('/')[-1] for frame in transforms_json['frames']]
+    removed_images = set(existing_images) - set(images_in_transforms)
+    for img in removed_images:
+        os.remove(images_directory / img)
 
     # Extract features and create database
     os.makedirs(colmap_directory, exist_ok = True)
-    subprocess.run([
+    extract_features_command = [
         'colmap', 'feature_extractor',
         '--database_path', f'{colmap_directory}/database.db',
         '--image_path', f'{ns_data_directory}/images'
-    ])
+    ]
+    extract_features_command = " ".join(extract_features_command)
+    print("Extracting features...")
+    run_command(extract_features_command)
 
     # Get mapping from name to image_id
     conn = sqlite3.connect(f'{colmap_directory}/database.db')
@@ -186,11 +266,6 @@ def build_map_from_polycam_output(polycam_data_directory):
     for row in images_db:
         imgname_to_imgid[row[1]] = row[0]
     conn.close()
-
-    # Read transforms.json file
-    json_file_path = f'{ns_data_directory}/transforms.json'
-    with open(json_file_path, 'r') as f:
-        transforms_json = json.load(f)
     
     # Prepare cameras file
     cameras_info, imgname_to_cameraid = _prepare_cameras_file(transforms_json, init_recon_output_directory)
@@ -212,19 +287,32 @@ def build_map_from_polycam_output(polycam_data_directory):
     
     # Run matching
     os.makedirs(final_recon_output_directory, exist_ok = True)
-    subprocess.run([
+    matcher_command = [
         'colmap', 'exhaustive_matcher',
         '--database_path', f'{colmap_directory}/database.db'
-    ])
+    ]
+    matcher_command = " ".join(matcher_command)
+    print("Matching features...")
+    run_command(matcher_command)
+    
+    # Delete images without correspondences
+    _delete_images_without_correspondences(
+        db_path = f'{colmap_directory}/database.db',
+        input_recon_path = init_recon_output_directory,
+        output_recon_path = init_recon_with_deleted_imgs_directory,
+    )
 
     # Run triangulation
-    subprocess.run([
+    triangulation_command = [
         'colmap', 'point_triangulator',
         '--database_path', f'{colmap_directory}/database.db',
         '--image_path', f'{ns_data_directory}/images',
-        '--input_path', init_recon_output_directory,
+        '--input_path', init_recon_with_deleted_imgs_directory,
         '--output_path', final_recon_output_directory
-    ])
+    ]
+    triangulation_command = " ".join(triangulation_command)
+    print("Triangulating points...")
+    run_command(triangulation_command)
 
     # Create hloc map from the final reconstruction
     map_creator.create_map_from_colmap_data(

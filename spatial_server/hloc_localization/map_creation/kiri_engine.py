@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import json
 import sqlite3
 import subprocess
@@ -126,7 +127,7 @@ def _prepare_images_file(transforms_json, output_directory,
 
 
 def build_map_from_kiri_output(input_directory):
-    output_directory = f'{input_directory}/colmap_known_poses'
+    output_directory = Path(input_directory).parent / 'colmap_known_poses'
     
     # Initial dummy reconstruction with just the camera poses
     init_recon_output_directory = f'{output_directory}/sparse/0'
@@ -196,5 +197,6 @@ def build_map_from_kiri_output(input_directory):
     # Create hloc map from the final reconstruction
     map_creator.create_map_from_colmap_data(
         colmap_model_path=final_recon_output_directory,
-        image_dir=f'{input_directory}/images'
+        image_dir=f'{input_directory}/images',
+        output_dir = Path(input_directory).parent / 'hloc_data'
     )

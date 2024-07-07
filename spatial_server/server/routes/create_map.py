@@ -36,6 +36,21 @@ def _extract_zip(zip_file, folder_path):
     return folder_path
 
 
+def _save_and_extract_zip(request, extract_folder_name):
+    zip_file = request.files['zip']
+    name = request.form.get('name', default='default_map')
+    
+    folder_path = _create_dataset_directory(name)
+    zip_file_path = _save_file(zip_file, folder_path, 'input.zip')
+    
+    extract_folder_path = os.path.join(folder_path, extract_folder_name)
+    _extract_zip(zip_file_path, extract_folder_path)
+    
+    _create_localization_url_file(name)
+    
+    return extract_folder_path
+
+
 @bp.route('/', methods=['GET'])
 def show_map_upload_form():
     return render_template('map_upload.html')
@@ -57,18 +72,22 @@ def upload_video():
 
 @bp.route('/images', methods=['POST'])
 def upload_images():
-    images_zip = request.files['imagesZip']
-    name = request.form.get('name', default='default_map')
-
-    folder_path = _create_dataset_directory(name)
-    images_zip_path = _save_file(images_zip, folder_path, 'images.zip')
-
-    images_folder_path = os.path.join(folder_path, 'images_orig')
-    _extract_zip(images_zip_path, images_folder_path)
-
-    _create_localization_url_file(name)
-    
+    images_folder_path = _save_and_extract_zip(request, extract_folder_name = 'images_org')
     # Call the map builder function
     executor.submit(map_creator.create_map_from_images, images_folder_path)
 
     return 'Images uploaded and map building started'
+
+@bp.route('/polycam', methods=['POST'])
+def upload_polycam():
+    polycam_directory = _save_and_extract_zip(request, extract_folder_name = 'polycam_data')
+    # Call the map builder function
+    executor.submit(map_creator.create_map_from_polycam_output, polycam_directory)
+    return 'Polycam output uploaded and map building started'
+
+@bp.route('/kiriengine', methods=['POST'])
+def upload_kiri_engine():
+    kiri_directory = _save_and_extract_zip(request, extract_folder_name = 'kiriengine_data')
+    # Call the map builder function
+    executor.submit(map_creator.create_map_from_polycam_output, kiri_directory)
+    return 'Polycam output uploaded and map building started'

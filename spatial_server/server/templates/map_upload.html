@@ -21,7 +21,8 @@
                 <option hidden disabled selected value> -- select an option -- </option>
                 <option value="images">Images</option>
                 <option value="video">Video</option>
-                <option value="realityCapture">Reality Capture</option>
+                <option value="polycam">Polycam</option>
+                <option value="kiriEngine">Kiri Engine</option>
             </select>
         </div>
         <div id="formContainer"></div>
@@ -47,6 +48,10 @@
                 render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/video_upload.html") | tojson }}
             } else if (selectedValue === "realityCapture") {
                 render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/reality_capture_upload.html") | tojson }}
+            } else if (selectedValue === "polycam") {
+                render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/polycam_upload.html") | tojson }}
+            } else if (selectedValue === "kiriEngine") {
+                render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/kiri_upload.html") | tojson }}
             }
             $("#formContainer").load(render_template_url);
         }

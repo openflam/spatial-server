@@ -1,13 +1,12 @@
 <div class="p-3 mb-2 bg-light text-dark">
-    Zip the images and upload the zipfile.
-    Pose for each image would be extracted to create a map.
+    Upload Polycam data as a zip file exported using "raw" option from the Polycam app.
 </div>
 
 <div class="mb-3">
     <label for="name" class="form-label">Name</label>
     <input type="text" class="form-control mb-2" id="name" placeholder="ArenaLab">
 
-    <label for="zip" class="form-label">Images zip</label>
+    <label for="zip" class="form-label">Polycam zip</label>
     <input type="file" class="form-control mb-2" id="zip">
 </div>
 
@@ -17,6 +16,6 @@
 
 <script>
     document.getElementById('submit-button').addEventListener('click', function () {
-        uploadZip(serverAddress = '/create_map/images');
+        uploadZip(serverAddress = '/create_map/polycam');
     });
 </script>
