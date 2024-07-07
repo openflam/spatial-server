@@ -32,6 +32,9 @@ def create_app(test_config=None):
     load_cache.load_ml_models(shared_data)
     load_cache.load_db_data(shared_data)
     
+    from .routes import index
+    app.register_blueprint(index.bp)
+    
     from .routes import localize
     app.register_blueprint(localize.bp)
 
