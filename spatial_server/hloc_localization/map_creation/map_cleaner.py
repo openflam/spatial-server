@@ -101,23 +101,23 @@ def clean_map(model_path, voxel_downsample=True, crop_y=0.33):
     print(f"Total {new_size} points, pruned {old_size - new_size} outliers")
 
     # Swap Y and Z axes, Y is vertical in aframe coordinate space
-    pcd.points = o3d.utility.Vector3dVector(np.array(pcd.points)[:, [1, 2, 0]])
+    processed_pcd.points = o3d.utility.Vector3dVector(np.array(processed_pcd.points)[:, [0, 2, 1]])
 
     if voxel_downsample: # Downsample
-        pcd = pcd.voxel_down_sample(voxel_size=0.08)
+        processed_pcd = processed_pcd.voxel_down_sample(voxel_size=0.08)
     
     if crop_y > 0: # Remove ceiling points
-        aabb = pcd.get_axis_aligned_bounding_box()
+        aabb = processed_pcd.get_axis_aligned_bounding_box()
         min_bound = np.array(aabb.min_bound)
         max_bound = np.array(aabb.max_bound)
         max_bound[1] -= crop_y  # Decrease the upper Y-bound
 
         # Crop off ceiling
         cropped_aabb = o3d.geometry.AxisAlignedBoundingBox(min_bound, max_bound)
-        pcd = pcd.crop(cropped_aabb)
+        processed_pcd = processed_pcd.crop(cropped_aabb)
 
     # Save as PCD
-    o3d.io.write_point_cloud(str(model_path.parent / 'points.pcd'), pcd)
+    o3d.io.write_point_cloud(str(model_path.parent / 'points.pcd'), processed_pcd)
     
 
 if __name__ == "__main__":
