@@ -14,6 +14,7 @@ def elevate_existing_reconstruction(model_path, output_path=None):
     Changes the z-coordinate of the points (and camera locations) so that
     the ground is approximately at 0
     """
+    model_path = Path(model_path)
     cameras, images, points3D = read_write_model.read_model(model_path)
 
     # Calculate the average z-coordinate of the points
@@ -82,6 +83,7 @@ def clean_map(model_path, voxel_downsample=True, crop_y=0.33):
     model_path : str
         The path to the COLMAP model file.
     """
+    model_path = Path(model_path)
     # Convert colmap format to PCD
     cameras, images, points3D = read_write_model.read_model(model_path)
     points_pcd = np.array([point.xyz for point in points3D.values()], dtype=np.float32)
@@ -122,6 +124,6 @@ def clean_map(model_path, voxel_downsample=True, crop_y=0.33):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Clean the map by removing outliers and adjusting the z coordinate of the points.")
-    parser.add_argument("model_path", type=str, help="The path to the COLMAP model file.")
+    parser.add_argument("--model_path", type=str, help="The path to the COLMAP model file.")
     args = parser.parse_args()
     clean_map(args.model_path)

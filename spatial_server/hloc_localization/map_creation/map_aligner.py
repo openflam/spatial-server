@@ -23,20 +23,31 @@ def align_colmap_model_manhattan(image_dir, colmap_model_path, method = "MANHATT
         '--method', f'{method}'
     ]
     subprocess.run(align_command, capture_output=True)
-    rotate_existing_model(output_path)  # Rotate by -90 degrees x axis by default
+    rotate_existing_model(output_path, rotation='x-90')  # Rotate by -90 degrees x axis by default
 
     return output_path
 
 
-def rotate_existing_model(model_path, output_path = None):
+def rotate_existing_model(model_path, output_path = None, rotation = 'x-90'):
+    model_path = Path(model_path)
     if output_path is None:
         output_path = model_path
     reconstruction = pycolmap.Reconstruction(model_path)
 
-    # Rotate by -90 degrees x axis by default
-    rotate_90_x_matrix = Rotation.from_euler('xyz', [-90, 0, 0], degrees = True).as_matrix() 
+    # 'rotation' has axis as first character and angle as the rest.
+    # Example: 'x-90' means rotate by -90 degrees around x axis
+    axis = rotation[0]
+    angle = float(rotation[1:])
+    if axis == 'x':
+        rotate_matrix = Rotation.from_euler('xyz', [angle, 0, 0], degrees = True).as_matrix()
+    elif axis == 'y':
+        rotate_matrix = Rotation.from_euler('xyz', [0, angle, 0], degrees = True).as_matrix()
+    elif axis == 'z':
+        rotate_matrix = Rotation.from_euler('xyz', [0, 0, angle], degrees = True).as_matrix()
+    else:
+        raise ValueError(f"Invalid axis {axis}")
     translate_matrix = np.array([[0],[0],[0]])
-    transform_matrix = np.concatenate((rotate_90_x_matrix, translate_matrix), axis = 1)
+    transform_matrix = np.concatenate((rotate_matrix, translate_matrix), axis = 1)
     reconstruction.transform(transform_matrix)
 
     reconstruction.write(model_path)
