@@ -103,7 +103,7 @@ def clean_map(model_path, voxel_downsample=True, crop_y=0.33):
     print(f"Total {new_size} points, pruned {old_size - new_size} outliers")
 
     # Swap Y and Z axes, Y is vertical in aframe coordinate space
-    processed_pcd.points = o3d.utility.Vector3dVector(np.array(processed_pcd.points)[:, [0, 2, 1]])
+    processed_pcd.points = o3d.utility.Vector3dVector(np.array(processed_pcd.points)[:, [1, 2, 0]])
 
     if voxel_downsample: # Downsample
         processed_pcd = processed_pcd.voxel_down_sample(voxel_size=0.08)
