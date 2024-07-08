@@ -21,6 +21,7 @@
             <button type="button" class="btn btn-primary mb-2" id="download-map">Download Map</button>
             <button type="button" class="btn btn-primary mb-2" id="register-map">Register Map</button>
             <button type="button" class="btn btn-primary mb-2" id="save-image-pose">Save Image Pose</button>
+            <button type="button" class="btn btn-primary mb-2" id="upload-waypoints">Upload Waypoints</button>
         </div>
     </div>
 
@@ -45,6 +46,9 @@
         });
         document.getElementById('save-image-pose').addEventListener('click', function () {
             window.location.href = "/save_image_pose";
+        });
+        document.getElementById('upload-waypoints').addEventListener('click', function () {
+            window.location.href = "/upload_waypoints";
         });
     </script>
 </body>

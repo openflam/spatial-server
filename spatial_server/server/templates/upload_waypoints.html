@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Upload Waypoints</title>
+</head>
+
+<body>
+    <div class="container-sm position-absolute top-50 start-50 translate-middle">
+        <h2 class="text-center">Upload Waypoints</h2>
+        <div class="p-3 mb-2 bg-light text-dark">
+            Upload waypoints created using the waypoint-tagger tool.
+        </div>
+        <div class="mb-3">
+            <label for="map_name" class="form-label">Map name</label>
+            <select id="map_name" class="form-control custom-select">
+                {% for map_name in map_names_list %}
+                  <option value="{{ map_name }}">{{ map_name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="waypoints_csv" class="form-label">CSV File</label>
+            <input type="file" class="form-control mb-2" id="waypoints_csv">
+        </div>
+
+        <button type="button" class="btn btn-success" onclick="uploadWaypoints()">Upload</button>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    
+        <script src="{{ url_for('static', filename = 'scripts/waypoints_upload.js') }}"></script>
+</body>
+
+</html>

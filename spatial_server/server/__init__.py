@@ -53,6 +53,9 @@ def create_app(test_config=None):
     from .routes import save_image_pose
     app.register_blueprint(save_image_pose.bp)
 
+    from .routes import upload_waypoints
+    app.register_blueprint(upload_waypoints.bp)
+
     CORS(app)
 
     return app
