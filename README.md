@@ -115,3 +115,20 @@ The point cloud created using the `map_creator` script generally has extraneous 
 ```
 python spatial_server/hloc_localization/map_cleaning.py <path_to_colmap_model>
 ```
+
+# Map transforms and conversion to PCD
+
+Use the `spatial_server.hloc_localization.map_creation.map_transforms` script to rotate, elevate and save map as a .pcd.
+
+To rotate a map (elevate and save pcd is run automatically):
+```
+python -m spatial_server.hloc_localization.map_creation.map_transforms --rotation x180
+```
+
+The format of argument to `--rotation` is: \[x/y/z\]\[degrees to rotate\].
+
+To elevate the map 
+```python -m spatial_server.hloc_localization.map_creation.map_transforms --elevate``` 
+
+To create PCD: 
+```python -m spatial_server.hloc_localization.map_creation.map_transforms --create_pcd```

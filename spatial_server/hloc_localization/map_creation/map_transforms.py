@@ -20,8 +20,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Rotate and elevate the COLMAP model')
     parser.add_argument('--model_path', type=str, help='Path to the COLMAP model')
     parser.add_argument('--rotation', type=str, help='Rotation to apply to the model. Example: x-90, y90, z180', default=None)
-    parser.add_argument('--elevate', action='store_true', help='Elevate the model', default=True)
+    parser.add_argument('--elevate', action='store_true', help='Elevate the model', default=False)
     parser.add_argument('--create_pcd', action='store_true', help='Create a PCD file from the model', default=True)
     args = parser.parse_args()
 
-    rotate_and_elevate(args.model_path, args.rotation, args.elevate, args.create_pcd)
+    # Elevate the model by default
+    elevate = True
+    if args.create_pcd and not args.elevate and args.rotation is None:
+        # If only create_pcd is explicitly set to True and no other transformation is specified, do not elevate
+        elevate = False
+    rotate_and_elevate(args.model_path, args.rotation, elevate, args.create_pcd)
