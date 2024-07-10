@@ -41,6 +41,11 @@ def download_map(map_name, download_sfm_recnstruction = False):
 
     all_filepaths = all_filepaths + localizer_url_filepath + point_cloud_pcd_filepath
 
+    # If waypoints_graph.csv exists, add it to the zip file
+    waypoints_graph_filepath = os.path.join(directory, 'waypoints_graph.csv')
+    if os.path.exists(waypoints_graph_filepath):
+        all_filepaths.append((waypoints_graph_filepath, 'waypoints_graph.csv'))
+
     # Create a zip file of the map data
     # Create a BytesIO object to store the zip file in memory
     memory_file = BytesIO()
