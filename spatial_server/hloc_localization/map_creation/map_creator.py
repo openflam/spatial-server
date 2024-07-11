@@ -16,7 +16,7 @@ from third_party.hloc.hloc import extract_features, pairs_from_covisibility, mat
 
 from .. import config, load_cache
 from spatial_server.server import shared_data
-from . import map_aligner, map_cleaner, kiri_engine, polycam
+from . import map_aligner, map_cleaner, mask_objects, kiri_engine, polycam
 
 def create_map_from_colmap_data(ns_process_output_dir = None, colmap_model_path = None, image_dir = None, output_dir = None):
 
@@ -110,6 +110,10 @@ def create_map_from_colmap_data(ns_process_output_dir = None, colmap_model_path 
     print("Elevate map to ground level..")
     map_cleaner.elevate_existing_reconstruction(sfm_reconstruction_path)
     
+    # Remove masked 3D points from the reconstruction
+    print("Removing 3D points corresponding to masked (frequently moving) objects..")
+    mask_objects.remove_masked_points3d(sfm_reconstruction_path)
+
     # Clean the map by removing outliers and save it as a PCD
     print("Cleaning the map..")
     map_cleaner.clean_map(sfm_reconstruction_path)

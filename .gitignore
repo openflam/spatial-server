@@ -17,6 +17,8 @@ build/
 
 .vscode/
 
+yolov8x-seg.pt
+
 # Ignore notebook uses for testing
 temp.ipynb
 .ipynb_checkpoints/

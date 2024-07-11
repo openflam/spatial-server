@@ -108,6 +108,13 @@ The point cloud generated is not necessarily aligned with the gravity axis and m
 ```
 python -m spatial_server.hloc_localization.map_aligner --model_path <path_to_colmap_model> --images_path <path_to_images_dir>
 ```
+# Removing masked objects from the map
+
+Objects that frequently move such as chairs and people should be excluded from the map. Use the script `mask_objects` to automatically find keypoints behind YOLOv8 masks and remove the corresponding 3D points from the map.
+
+```
+python -m spatial_server.hloc_localization.map_creation.mask_objects.py --model_path <path_to_colmap_model> --output_path <path_to_output_dir>
+```
 # Map Cleaning
 
 The point cloud created using the `map_creator` script generally has extraneous points. Use the script `map_cleaning` to automatically remove outliers and align the maps ground. It also saves the model as PCD file.
