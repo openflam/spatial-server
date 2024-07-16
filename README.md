@@ -113,7 +113,7 @@ python -m spatial_server.hloc_localization.map_aligner --model_path <path_to_col
 Objects that frequently move such as chairs and people should be excluded from the map. Use the script `mask_objects` to automatically find keypoints behind YOLOv8 masks and remove the corresponding 3D points from the map.
 
 ```
-python -m spatial_server.hloc_localization.map_creation.mask_objects.py --model_path <path_to_colmap_model> --output_path <path_to_output_dir>
+python -m spatial_server.hloc_localization.map_creation.mask_objects --model_path <path_to_colmap_model> --image_dir <path_to_image_dir> --output_path <path_to_output_dir>
 ```
 # Map Cleaning
 

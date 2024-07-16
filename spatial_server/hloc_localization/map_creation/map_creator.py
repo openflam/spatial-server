@@ -41,6 +41,10 @@ def create_map_from_colmap_data(ns_process_output_dir = None, colmap_model_path 
     sfm_pairs_path = hloc_output_dir / 'sfm-pairs-covis20.txt' # Pairs used for SfM reconstruction
     sfm_reconstruction_path = hloc_output_dir / 'sfm_reconstruction' # Path to reconstructed SfM
 
+    # Remove masked 3D points from the reconstruction
+    print("Removing 3D points corresponding to masked (frequently moving) objects..")
+    mask_objects.remove_masked_points3d(colmap_model_path, image_dir)
+
     # Feature extraction
     ## Extract local features in each data set image using Superpoint
     print("Extracting local features using Superpoint..")
@@ -50,6 +54,10 @@ def create_map_from_colmap_data(ns_process_output_dir = None, colmap_model_path 
         image_dir = image_dir,
         export_dir = hloc_output_dir
     )
+
+    # Remove masked keypoints from local features database
+    print("Removing masked local features...")
+    mask_objects.remove_masked_keypoints(colmap_model_path, local_features_path, image_dir)
 
     print("Extracting global descriptors using NetVLad..")
     ## Extract global descriptors from each image using NetVLad
@@ -109,10 +117,6 @@ def create_map_from_colmap_data(ns_process_output_dir = None, colmap_model_path 
     # Elevate the model to ground level
     print("Elevate map to ground level..")
     map_cleaner.elevate_existing_reconstruction(sfm_reconstruction_path)
-    
-    # Remove masked 3D points from the reconstruction
-    print("Removing 3D points corresponding to masked (frequently moving) objects..")
-    mask_objects.remove_masked_points3d(sfm_reconstruction_path)
 
     # Clean the map by removing outliers and save it as a PCD
     print("Cleaning the map..")
