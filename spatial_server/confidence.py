@@ -4,15 +4,6 @@ import sys
 import h5py
 from collections import defaultdict
 
-from . import extract_features, extractors, matchers, pairs_from_retrieval, match_features, visualization
-from .extract_features import ImageDataset
-from .localize_sfm import QueryLocalizer, pose_from_cluster
-from .fast_localize import localize
-from .utils import viz_3d, io
-from .utils.base_model import dynamic_load
-from .utils.io import list_h5_names
-from .utils.parsers import names_to_pair
-
 import pycolmap
 import numpy as np
 from scipy.spatial.transform import Rotation
@@ -38,10 +29,10 @@ if not torch_hub_dir.exists():
 torch.hub.set_dir(str(torch_hub_dir))
 
 def encode_map(map, device, preprocess, model):
-    model.load_state_dict(torch.load(f"models/{map}_ViTL14-336px.pth"))
+    model.load_state_dict(torch.load(f"spatial_server/models/{map}_ViTL14-336px.pth"))
     # Create and load the projection head
     projection_head = ProjectionHead(model.visual.output_dim, 512, 256).to(device)
-    projection_head.load_state_dict(torch.load(f"models/{map}_projection_head.pth"))
+    projection_head.load_state_dict(torch.load(f"spatial_server/models/{map}_projection_head.pth"))
 
     map_path = f"/code/data/map_data/{map}/images"
 
@@ -58,21 +49,21 @@ def encode_map(map, device, preprocess, model):
     image_batch = torch.stack(image_list, dim=0).to(device)
     
     with torch.no_grad():
-        features = model.encode_image(map_path)
+        features = model.encode_image(image_batch)
         projected_features = projection_head(features.float())
         projected_features = projected_features / projected_features.norm(dim=-1, keepdim=True)
 
     #Save embeddings
     embeddings = {"image_names": image_names, "projected_features": projected_features}
-    torch.save(embeddings, f"embeddings/{map}_embeddings.pt")
+    torch.save(embeddings, f"spatial_server/embeddings/{map}_embeddings.pt")
 
 def get_confidence(map, query_path, preprocess, model, device):
-    model.load_state_dict(torch.load(f"models/{map}_ViTL14-336px.pth"))
+    model.load_state_dict(torch.load(f"spatial_server/models/{map}_ViTL14-336px.pth"))
     # Create and load the projection head
     projection_head = ProjectionHead(model.visual.output_dim, 512, 256).to(device)
-    projection_head.load_state_dict(torch.load(f"models/{map}_projection_head.pth"))
+    projection_head.load_state_dict(torch.load(f"spatial_server/models/{map}_projection_head.pth"))
 
-    embeddings = torch.load(f"embeddings/{map}_embeddings.pt")
+    embeddings = torch.load(f"spatial_server/embeddings/{map}_embeddings.pt")
 
     image = preprocess(Image.open(query_path)).unsqueeze(0).to(device)
     with torch.no_grad():
