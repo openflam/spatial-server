@@ -26,6 +26,16 @@ async function sendCameraFrame() {
     aframeCameraEl.updateMatrixWorld(force = true);
     formData.append('aframe_camera_matrix_world', aframeCameraEl.matrixWorld.toArray());
 
+    var position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+    var lat = position.coords.latitude;
+    var lon = position.coords.longitude;
+    var accuracy = position.coords.accuracy;
+    formData.append('lat', lat);
+    formData.append('lon', lon);
+    formData.append('error_m', accuracy);
+
     // Send the image to the server
     response = await fetchJSON(serverURL, formData);
     return response;
@@ -93,7 +103,7 @@ function initXRSession() {
                 xrSession.requestReferenceSpace('viewer').then((refSpace) => {
                     xrRefSpace = refSpace;
                     xrSession.requestAnimationFrame(onXRFrame);
-                    
+
                     // Send camera frames to the server
                     buttonEl.addEventListener('click', sendCameraFrame);
                 });
