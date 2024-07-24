@@ -2,7 +2,7 @@ import subprocess
 import sys
 
 
-def run_command(cmd, shell = False, verbose=False):
+def run_command(cmd, shell=False, verbose=False):
     """Runs a command and returns the output.
 
     Args:
@@ -11,7 +11,9 @@ def run_command(cmd, shell = False, verbose=False):
     Returns:
         The output of the command if return_output is True, otherwise None.
     """
-    out = subprocess.run(cmd, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    out = subprocess.run(
+        cmd, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+    )
     if out.returncode != 0:
         print(f"Error running command: {cmd}")
         print(out.stderr.decode("utf-8"))
