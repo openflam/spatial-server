@@ -94,6 +94,7 @@ RUN python3 -m pip install --upgrade pip
 RUN pip install flask flask-cors ffmpeg-python
 RUN pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
 RUN pip install nerfstudio
+RUN pip install ultralytics
 
 RUN mkdir /dependencies
 COPY ./third_party/hloc/requirements.txt /dependencies/requirements.txt
