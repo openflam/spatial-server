@@ -10,7 +10,7 @@ from third_party.hloc.hloc.localize_sfm import QueryLocalizer, pose_from_cluster
 from third_party.hloc.hloc import fast_localize
 
 from . import config
-from .coordinate_transforms import get_arscene_pose_matrix
+from .coordinate_transforms import get_aframe_pose_matrix
 from spatial_server.server import shared_data
 
 
@@ -79,21 +79,20 @@ def get_hloc_camera_matrix_from_image(img_path, dataset_name, shared_data=shared
     return hloc_camera_matrix, ret
 
 
-def localize(img_path, dataset_name, aframe_camera_matrix_world):
+def localize(img_path, dataset_name):
 
     hloc_camera_matrix, ret = get_hloc_camera_matrix_from_image(img_path, dataset_name)
 
     if ret["success"]:
-        arscene_pose_matrix = get_arscene_pose_matrix(
-            aframe_camera_pose=aframe_camera_matrix_world,
+        pose_matrix = get_aframe_pose_matrix(
             hloc_camera_matrix=hloc_camera_matrix,
             dataset_name=dataset_name,
         )
         return {
             "success": True,
-            "arscene_pose": arscene_pose_matrix,
+            "pose": pose_matrix,
             "num_inliers": int(ret["num_inliers"]),
             "confidence": int(ret["num_inliers"]),
         }
     else:
-        return {"success": False}
+        return {"success": False, "pose": None, "confidence": 0}

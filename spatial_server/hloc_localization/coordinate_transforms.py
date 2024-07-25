@@ -23,16 +23,10 @@ def convert_blender_to_aframe_frame(matrix):
     return T_B_to_A @ matrix
 
 
-def get_arscene_pose_matrix(aframe_camera_pose, hloc_camera_matrix, dataset_name):
+def get_aframe_pose_matrix(hloc_camera_matrix, dataset_name):
     blender_camera_matrix = convert_hloc_to_blender_frame(hloc_camera_matrix)
     blender_camera_matrix_in_aframe = convert_blender_to_aframe_frame(
         blender_camera_matrix
     )
 
-    aframe_camera_matrix = np.array(aframe_camera_pose).reshape((4, 4)).T
-
-    arscene_pose_aframe = aframe_camera_matrix @ np.linalg.inv(
-        blender_camera_matrix_in_aframe
-    )
-
-    return arscene_pose_aframe.T.flatten().tolist()
+    return blender_camera_matrix_in_aframe.T.tolist()
