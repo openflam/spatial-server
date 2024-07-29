@@ -29,4 +29,4 @@ def get_aframe_pose_matrix(hloc_camera_matrix, dataset_name):
         blender_camera_matrix
     )
 
-    return blender_camera_matrix_in_aframe.T.tolist()
+    return blender_camera_matrix_in_aframe.tolist()
