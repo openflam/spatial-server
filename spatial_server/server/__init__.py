@@ -66,6 +66,10 @@ def create_app(test_config=None):
 
     app.register_blueprint(download_waypoints.bp)
 
+    from .routes import explore_waypoints
+
+    app.register_blueprint(explore_waypoints.bp)
+
     CORS(app)
 
     return app

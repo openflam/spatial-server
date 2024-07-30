@@ -22,6 +22,7 @@
             <button type="button" class="btn btn-primary mb-2" id="register-map">Register Map</button>
             <button type="button" class="btn btn-primary mb-2" id="save-image-pose">Save Image Pose</button>
             <button type="button" class="btn btn-primary mb-2" id="upload-waypoints">Upload Waypoints</button>
+            <button type="button" class="btn btn-primary mb-2" id="explore-waypoints">Explore Waypoints</button>
         </div>
     </div>
 
@@ -49,6 +50,9 @@
         });
         document.getElementById('upload-waypoints').addEventListener('click', function () {
             window.location.href = "/upload_waypoints";
+        });
+        document.getElementById('explore-waypoints').addEventListener('click', function () {
+            window.location.href = "/explore_waypoints";
         });
     </script>
 </body>

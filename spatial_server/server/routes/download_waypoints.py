@@ -3,10 +3,10 @@ import os
 from flask import Blueprint, request
 import pandas as pd
 
-bp = Blueprint("download_waypoints", __name__, url_prefix="/waypoints")
+bp = Blueprint("download_waypoints", __name__, url_prefix="/<map_name>/waypoints")
 
 
-@bp.route("/<map_name>", methods=["GET"])
+@bp.route("/", methods=["GET"])
 def download_waypoints(map_name):
     waypoints_graph_filepath = os.path.join(
         "data", "map_data", map_name, "waypoints_graph.csv"

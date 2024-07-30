@@ -6,10 +6,10 @@ from flask import Blueprint, request, jsonify
 
 from spatial_server.hloc_localization import localizer
 
-bp = Blueprint("localize", __name__, url_prefix="/localize")
+bp = Blueprint("localize", __name__, url_prefix="/<name>/localize")
 
 
-@bp.route("/image/<name>", methods=["POST"])
+@bp.route("/image", methods=["POST"])
 def image_localize(name):
     # Download an image, save it and localize it against the map
     image = request.files["image"]
