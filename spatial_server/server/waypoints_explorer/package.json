@@ -9,9 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@openvps/dnsspatialdiscovery": "^2.2.2"
+    "@openvps/dnsspatialdiscovery": "^2.2.2",
+    "@types/aframe": "^1.2.7"
   },
   "devDependencies": {
+    "@types/webxr": "^0.5.19",
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.4",
     "webpack": "^5.93.0",

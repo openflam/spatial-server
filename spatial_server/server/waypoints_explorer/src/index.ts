@@ -1,12 +1,8 @@
-import { MapServer } from '@openvps/dnsspatialdiscovery';
+import { initialize } from "./initialize";
+import { localize } from "./openvps/localize";
 
-const mapServer = new MapServer(fullHost);
+initialize();
 
-async function getWaypoints() {
-    let waypoints = await mapServer.queryWaypoints();
-    console.log(waypoints);
-}
-
-getWaypoints();
-
-export { MapServer };
+setInterval(() => {
+    localize();
+}, 5000);

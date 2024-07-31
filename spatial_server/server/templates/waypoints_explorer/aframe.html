@@ -8,13 +8,14 @@
         var host = {{ request.host | tojson }};
         var fullHost = host + "/" + mapname;
     </script>
-    <script src="{{ url_for('static', filename = 'scripts/waypoints_explorer/bundle.js') }}"></script>
 </head>
 
 <body>
     <a-scene xr-mode-ui="XRMode: xr">
         <a-entity id="camera" camera look-controls></a-entity>
     </a-scene>
+
+    <script src="{{ url_for('static', filename = 'scripts/waypoints_explorer/bundle.js') }}"></script>
 </body>
 
 </html>
