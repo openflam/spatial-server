@@ -1,4 +1,6 @@
-async function localize() {
+import { Matrix4 } from 'three';
+
+async function localize(): Promise<Matrix4> {
     let cameraFramePixels = globalThis.cameraCapture.currentPixelsArray;
     let imageBlob: Blob = await getImageBlobFromArray(
         cameraFramePixels,
@@ -6,8 +8,9 @@ async function localize() {
         globalThis.cameraCapture.frameHeight,
         globalThis.canvas);
     let localizationData = await globalThis.mapServer.localize(imageBlob, 'image');
-    console.log(localizationData);
-    return localizationData;
+
+    let objectPose = transformPoseMatrix(localizationData.pose);
+    return objectPose;
 }
 
 async function getImageBlobFromArray(
@@ -36,6 +39,33 @@ async function getImageBlobFromArray(
 
     let blob: Blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg'));
     return blob;
+}
+
+function transpose(matrix: number[][]): number[][] {
+    return matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
+}
+
+function transformPoseMatrix(poseMatrix: number[][]): Matrix4 {
+    // Transpose to column-major format and then flatten
+    let localizationPose = transpose(poseMatrix).flat();
+
+    // Invert localizationPose
+    let localizationPoseInv = new Matrix4();
+    localizationPoseInv.fromArray(localizationPose);
+    localizationPoseInv.invert();
+
+    globalThis.camera.updateMatrixWorld(true); // force = true
+    let cameraPose = globalThis.camera.matrixWorld;
+
+    // The pose returned by the server is in the coordinate system of the server.
+    // Let B be the coordinate system of the server, and A the system of the client.
+    // C is the pose of the camera, and O is the pose of an object. What the server returns is C_B.
+    // We want: inv(C_B) O_B = inv(C_A) O_A. (ie. Pose of objects relative to the camera is same in both systems).
+    // => O_A = C_A inv(C_B) O_B
+
+    let objectPose = cameraPose.multiply(localizationPoseInv);
+
+    return objectPose;
 }
 
 export { localize };

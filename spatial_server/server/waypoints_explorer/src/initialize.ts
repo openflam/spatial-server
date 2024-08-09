@@ -6,6 +6,15 @@ export function initialize() {
     // Initialize the map server
     globalThis.mapServer = new MapServer(fullHost);
 
+    // Initialize the canvas
+    globalThis.canvas = document.createElement('canvas');
+
+    // Assign the scene
+    globalThis.scene = document.querySelector('a-scene');
+
+    // Assign the camera
+    globalThis.camera = document.querySelector('#camera').object3D;
+
     // Initialize the camera capture
     const sceneEl: SceneXR = document.querySelector('a-scene');
     if (sceneEl.hasLoaded) {
@@ -15,7 +24,4 @@ export function initialize() {
             globalThis.cameraCapture = new WebXRCameraCapture(sceneEl);
         });
     }
-
-    // Initialize the canvas
-    globalThis.canvas = document.createElement('canvas');
 }

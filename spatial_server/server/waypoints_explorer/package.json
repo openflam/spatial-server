@@ -9,10 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@openvps/dnsspatialdiscovery": "^2.2.2",
-    "@types/aframe": "^1.2.7"
+    "@openvps/dnsspatialdiscovery": "^2.2.3"
   },
   "devDependencies": {
+    "@types/aframe": "^1.2.7",
+    "@types/three": "^0.167.1",
     "@types/webxr": "^0.5.19",
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.4",
