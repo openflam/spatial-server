@@ -122,13 +122,13 @@ Use the `spatial_server.hloc_localization.map_creation.map_transforms` script to
 
 To rotate a map (elevate and save pcd is run automatically):
 ```
-python -m spatial_server.hloc_localization.map_creation.map_transforms --rotation x180
+python3 -m spatial_server.hloc_localization.map_creation.map_transforms --rotation x180 --model_path <path_to_colmap_directory>
 ```
 
 The format of argument to `--rotation` is: \[x/y/z\]\[degrees to rotate\].
 
 To elevate the map 
-```python -m spatial_server.hloc_localization.map_creation.map_transforms --elevate``` 
+```python3 -m spatial_server.hloc_localization.map_creation.map_transforms --elevate --model_path <path_to_colmap_directory>``` 
 
 To create PCD: 
-```python -m spatial_server.hloc_localization.map_creation.map_transforms --create_pcd```
+```python3 -m spatial_server.hloc_localization.map_creation.map_transforms --create_pcd --model_path <path_to_colmap_directory>```

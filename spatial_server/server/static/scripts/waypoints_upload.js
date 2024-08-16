@@ -16,14 +16,14 @@ function uploadWaypoints() {
         method: 'POST',
         body: formData,
     })
-    .then(response => {
-        if (response.ok) {
-            alert('Waypoints uploaded successfully.');
-        } else {
-            alert('Failed to upload waypoints to the server. Server response: ' + response.statusText);
-        }
-    })
-    .catch(error => {
-        alert('Error uploading waypoints to the server: ' + error.message);
-    });
+        .then(response => {
+            if (response.ok) {
+                alert('Waypoints uploaded successfully.');
+            } else {
+                alert('Failed to upload waypoints to the server. Server response: ' + response.statusText);
+            }
+        })
+        .catch(error => {
+            alert('Error uploading waypoints to the server: ' + error.message);
+        });
 }

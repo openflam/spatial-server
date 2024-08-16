@@ -1,0 +1,26 @@
+<html>
+
+<head>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+
+    <!-- Declare mapname and hostname to be used by the javascript to show waypoints of the correct map -->
+    <script>
+        var mapname = {{ mapname | tojson}};
+        var host = {{ request.host | tojson }};
+        var fullHost = host + "/" + mapname;
+    </script>
+
+    <!-- Register custom components -->
+    <script src="{{ url_for('static', filename = 'scripts/waypoints_explorer/register-components.js') }}"></script>
+</head>
+
+<body>
+    <a-scene xr-mode-ui="XRMode: xr">
+        <a-entity id="camera" camera look-controls></a-entity>
+    </a-scene>
+
+    <!-- The main waypoints_exporer bundle -->
+    <script src="{{ url_for('static', filename = 'scripts/waypoints_explorer/bundle.js') }}"></script>
+</body>
+
+</html>
