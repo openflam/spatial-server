@@ -1,4 +1,3 @@
-import './components';
 import { initialize } from "./initialize";
 import { localize } from "./openvps/localize";
 import { renderWaypoints } from "./render-waypoints/render-waypoints";

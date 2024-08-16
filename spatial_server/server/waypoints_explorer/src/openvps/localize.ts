@@ -54,8 +54,9 @@ function transformPoseMatrix(poseMatrix: number[][]): Matrix4 {
     localizationPoseInv.fromArray(localizationPose);
     localizationPoseInv.invert();
 
+    let cameraPose = new AFRAME.THREE.Matrix4();
     globalThis.camera.updateMatrixWorld(true); // force = true
-    let cameraPose = globalThis.camera.matrixWorld;
+    cameraPose = cameraPose.fromArray(globalThis.camera.matrixWorld.elements);
 
     // The pose returned by the server is in the coordinate system of the server.
     // Let B be the coordinate system of the server, and A the system of the client.
@@ -63,8 +64,8 @@ function transformPoseMatrix(poseMatrix: number[][]): Matrix4 {
     // We want: inv(C_B) O_B = inv(C_A) O_A. (ie. Pose of objects relative to the camera is same in both systems).
     // => O_A = C_A inv(C_B) O_B
 
-    let objectPose = cameraPose.multiply(localizationPoseInv);
-
+    let objectPose = new Matrix4();
+    objectPose = objectPose.multiplyMatrices(cameraPose, localizationPoseInv);
     return objectPose;
 }
 

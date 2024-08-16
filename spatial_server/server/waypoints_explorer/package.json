@@ -4,16 +4,18 @@
   "description": "Javascript for camera pose collections",
   "main": "src/index.js",
   "scripts": {
-    "build": "webpack"
+    "build:main": "webpack",
+    "build:components": "webpack --config webpack.components.js",
+    "build": "npm run build:main && npm run build:components"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@openvps/dnsspatialdiscovery": "^2.2.3"
+    "@openvps/dnsspatialdiscovery": "^2.2.3",
+    "three": "^0.167.1"
   },
   "devDependencies": {
     "@types/aframe": "^1.2.7",
-    "@types/three": "^0.167.1",
     "@types/webxr": "^0.5.19",
     "ts-loader": "^9.5.1",
     "typescript": "^5.5.4",

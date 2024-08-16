@@ -34,9 +34,9 @@ function createWaypointsGraphEntity(waypoints: WayPoint[]) {
 
         // The navmarkers are in z-up coordinates, so we need to convert them to y-up
         waypointEntity.object3D.position.set(
-            waypoint.position[0],
-            waypoint.position[2],
-            waypoint.position[1]
+            waypoint.position[1], // Y -> X
+            waypoint.position[2], // Z -> Y
+            waypoint.position[0], // X -> Z
         );
 
         // Add the waypoint entity to the waypoints graph entity

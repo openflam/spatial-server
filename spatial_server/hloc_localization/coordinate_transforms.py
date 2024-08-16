@@ -17,10 +17,14 @@ def convert_hloc_to_blender_frame(matrix):
 
 
 def convert_blender_to_aframe_frame(matrix):
-    # Rotate -90 degrees along x-axis
-    T_B_to_A = np.eye(4)
-    T_B_to_A[:3, :3] = Rotation.from_euler("xyz", [-90, 0, 0], degrees=True).as_matrix()
-    return T_B_to_A @ matrix
+    # Rotate -90 degrees along x-axis and then -90 along y axis
+    T_m90_x = np.eye(4)
+    T_m90_x[:3, :3] = Rotation.from_euler("xyz", [-90, 0, 0], degrees=True).as_matrix()
+
+    T_m90_y = np.eye(4)
+    T_m90_y[:3, :3] = Rotation.from_euler("xyz", [0, -90, 0], degrees=True).as_matrix()
+
+    return T_m90_y @ (T_m90_x @ matrix)
 
 
 def get_aframe_pose_matrix(hloc_camera_matrix, dataset_name):

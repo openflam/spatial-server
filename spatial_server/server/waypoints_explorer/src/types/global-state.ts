@@ -1,9 +1,13 @@
 import { MapServer } from "@openvps/dnsspatialdiscovery";
-import { WebXRCameraCapture } from "./camera-capture/webxr-capture";
-import { SceneXR } from "./types/aframe";
+import { WebXRCameraCapture } from "../camera-capture/webxr-capture";
+import { SceneXR } from "./aframe";
 import { Entity, THREE } from "aframe";
 
 declare global {
+    // From the HTML file template at templates/waypoints_explorer/aframe.html
+    const mapname: string;
+    const fullHost: string;
+
     // MapServer instance for the selected map
     var mapServer: MapServer;
 

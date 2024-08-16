@@ -10,14 +10,17 @@
         var fullHost = host + "/" + mapname;
     </script>
 
-    <!-- The main waypoints_exporer bundle -->
-    <script src="{{ url_for('static', filename = 'scripts/waypoints_explorer/bundle.js') }}"></script>
+    <!-- Register custom components -->
+    <script src="{{ url_for('static', filename = 'scripts/waypoints_explorer/register-components.js') }}"></script>
 </head>
 
 <body>
     <a-scene xr-mode-ui="XRMode: xr">
         <a-entity id="camera" camera look-controls></a-entity>
     </a-scene>
+
+    <!-- The main waypoints_exporer bundle -->
+    <script src="{{ url_for('static', filename = 'scripts/waypoints_explorer/bundle.js') }}"></script>
 </body>
 
 </html>
