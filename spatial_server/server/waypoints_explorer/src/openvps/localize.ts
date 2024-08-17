@@ -1,4 +1,10 @@
 import { Matrix4 } from 'three';
+import { LocalizationData } from '@openvps/dnsspatialdiscovery';
+
+// All keys from LocalizationData and objectPose
+interface LocalizationDataWithObjectPose extends LocalizationData {
+    objectPose: Matrix4;
+}
 
 async function localize(): Promise<Matrix4> {
     let cameraFramePixels = globalThis.cameraCapture.currentPixelsArray;
@@ -10,7 +16,27 @@ async function localize(): Promise<Matrix4> {
     let localizationData = await globalThis.mapServer.localize(imageBlob, 'image');
 
     let objectPose = transformPoseMatrix(localizationData.pose);
-    return objectPose;
+
+    // Add objectPose to localizationData
+    let localizationDataWithObjectPose: LocalizationDataWithObjectPose = {
+        ...localizationData,
+        objectPose: objectPose
+    };
+
+    updateBestLocalizationResult(localizationDataWithObjectPose);
+
+    return globalThis.bestLocalizationResult.objectPose;
+}
+
+function updateBestLocalizationResult(localizationData: LocalizationDataWithObjectPose) {
+    if (!globalThis.bestLocalizationResult) {
+        globalThis.bestLocalizationResult = localizationData;
+    } else {
+        // Update bestLocalizationResult if the new localizationData has a higher confidence
+        if (localizationData.serverConfidence > globalThis.bestLocalizationResult.serverConfidence) {
+            globalThis.bestLocalizationResult = localizationData;
+        }
+    }
 }
 
 async function getImageBlobFromArray(
@@ -69,4 +95,4 @@ function transformPoseMatrix(poseMatrix: number[][]): Matrix4 {
     return objectPose;
 }
 
-export { localize };
+export { localize, LocalizationDataWithObjectPose };
