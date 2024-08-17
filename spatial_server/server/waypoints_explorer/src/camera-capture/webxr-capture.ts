@@ -109,6 +109,30 @@ class WebXRCameraCapture {
         // bind back to xr session's framebuffer
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, glLayer.framebuffer);
     }
+
+    async fetchCurrentImageBlob(canvas: HTMLCanvasElement): Promise<Blob> {
+        // Mirror currentPixels and turn it upside down
+        let framePixels_mirror = new Uint8ClampedArray(this.frameWidth * this.frameHeight * 4);
+        for (let i = 0; i < this.frameHeight; i++) {
+            for (let j = 0; j < this.frameWidth; j++) {
+                framePixels_mirror[(this.frameHeight - i - 1) * this.frameWidth * 4 + j * 4] = this.currentPixelsArray[i * this.frameWidth * 4 + j * 4];
+                framePixels_mirror[(this.frameHeight - i - 1) * this.frameWidth * 4 + j * 4 + 1] = this.currentPixelsArray[i * this.frameWidth * 4 + j * 4 + 1];
+                framePixels_mirror[(this.frameHeight - i - 1) * this.frameWidth * 4 + j * 4 + 2] = this.currentPixelsArray[i * this.frameWidth * 4 + j * 4 + 2];
+                framePixels_mirror[(this.frameHeight - i - 1) * this.frameWidth * 4 + j * 4 + 3] = this.currentPixelsArray[i * this.frameWidth * 4 + j * 4 + 3];
+            }
+        }
+
+        // Convert currentPixels to base64
+        canvas.width = this.frameWidth;
+        canvas.height = this.frameHeight;
+        let canvas2DContext = canvas.getContext('2d');
+        let imageData = canvas2DContext.createImageData(this.frameWidth, this.frameHeight);
+        imageData.data.set(framePixels_mirror);
+        canvas2DContext.putImageData(imageData, 0, 0);
+
+        let blob: Blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg'));
+        return blob;
+    }
 }
 
 export { WebXRCameraCapture };
