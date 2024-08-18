@@ -14,13 +14,14 @@ def download_waypoints(map_name):
     waypoints_graph_df = pd.read_csv(waypoints_graph_filepath)
 
     # Convert to a list of "names" and "positions". The "names" are the waypoint IDs.
-    waypoints_graph_df = waypoints_graph_df[["id", "x", "y", "z"]].to_dict(
+    waypoints_graph_df = waypoints_graph_df[["id", "x", "y", "z", "neighbors"]].to_dict(
         orient="records"
     )
     waypoints_graph_df = [
         {
             "name": waypoint["id"],
             "position": [waypoint["x"], waypoint["y"], waypoint["z"]],
+            "neighbors": waypoint["neighbors"].split(";"),
         }
         for waypoint in waypoints_graph_df
     ]
