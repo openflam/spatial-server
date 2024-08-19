@@ -2,6 +2,7 @@ import { MapServer } from "@openvps/dnsspatialdiscovery";
 import { WebXRCameraCapture } from "../camera-capture/webxr-capture";
 import { SceneXR } from "./aframe";
 import { Entity, THREE } from "aframe";
+import { LocalizationDataWithObjectPose } from "../openvps/localize";
 
 declare global {
     // From the HTML file template at templates/waypoints_explorer/aframe.html
@@ -10,6 +11,9 @@ declare global {
 
     // MapServer instance for the selected map
     var mapServer: MapServer;
+
+    // Best localization result
+    var bestLocalizationResult: LocalizationDataWithObjectPose | null;
 
     // WebXR Camera Capture
     var cameraCapture: WebXRCameraCapture;

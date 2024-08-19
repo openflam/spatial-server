@@ -1,4 +1,4 @@
-import { WayPoint } from "@openvps/dnsspatialdiscovery/dist/src/localization/map-server";
+import { WayPoint } from "@openvps/dnsspatialdiscovery";
 import { Matrix4, Object3D, Quaternion, Vector3 } from "three";
 
 async function renderWaypoints(objectPose: Matrix4) {
@@ -41,6 +41,31 @@ function createWaypointsGraphEntity(waypoints: WayPoint[]) {
 
         // Add the waypoint entity to the waypoints graph entity
         waypointsGraphEntity.appendChild(waypointEntity);
+
+        // Add the waypoint connections to each neighbor
+        waypoint.neighbors.forEach(neighborName => {
+            let neighborWaypoint = waypoints.find(w => w.name === neighborName);
+            if (waypoint.name > neighborWaypoint.name) {
+                // Only create the connection once for a pair of waypoints
+                return;
+            }
+            let connectionEntity = document.createElement('a-entity');
+            connectionEntity.setAttribute('id', `${waypoint.name}-${neighborName}`);
+            connectionEntity.setAttribute('waypoint-connection', {
+                start: {
+                    x: waypoint.position[1],
+                    y: waypoint.position[2],
+                    z: waypoint.position[0],
+                },
+                end: {
+                    x: neighborWaypoint.position[1],
+                    y: neighborWaypoint.position[2],
+                    z: neighborWaypoint.position[0],
+                },
+                id: `${waypoint.name}-${neighborName}`,
+            });
+            waypointsGraphEntity.appendChild(connectionEntity);
+        });
     });
 
     return waypointsGraphEntity;

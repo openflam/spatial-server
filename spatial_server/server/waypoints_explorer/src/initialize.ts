@@ -6,6 +6,9 @@ export function initialize() {
     // Initialize the map server
     globalThis.mapServer = new MapServer(fullHost);
 
+    // Initialize the best localization result
+    globalThis.bestLocalizationResult = null;
+
     // Initialize the canvas
     globalThis.canvas = document.createElement('canvas');
 

@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@openvps/dnsspatialdiscovery": "^2.2.3",
+    "@openvps/dnsspatialdiscovery": "^3.0.0",
     "three": "^0.167.1"
   },
   "devDependencies": {
