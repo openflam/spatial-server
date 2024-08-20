@@ -11,16 +11,16 @@ This repository contains submodules. Clone the repo using:
 git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 ```
 
-## Install dependencies and run server
+# Install dependencies and run server
 
-### Docker-based installation (Recommended)
+## Docker-based installation
 
 1. Install docker engine. For Ubuntu, use instructions [from here](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository).
 2. Install nvidia-container-toolkit. For Ubuntu, use instructions [from here](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installing-with-apt).
 3. Run `nvidia-smi --query-gpu=compute_cap --format=csv` to get the CUDA Architecture. Change the `CUDA_ARCHITECTURES` ARG in the Dockerfile (without the dot).
 3. `cd spatial-server`
 
-#### Running the server
+## Running the server
 Run `docker compose up --detach`. To print logs, run `docker compose logs`. To shutdown, `docker compose down`.
 
 If behind proxy, set the environment variable `BEHIND_PROXY` to `true`: `BEHIND_PROXY=true docker compose up --detach`.
@@ -31,42 +31,6 @@ To run jupyter lab inside the docker container:
 - Get the container ID by running `docker ps`.
 - Attach the terminal to the container bu running: `docker exec -it <container_id> bash`.
 - Once inside the container, run: `jupyter lab --allow-root --ip 0.0.0.0`.
-
-
-### Conda-based installation (OLD)
-
-- Install COLMAP and ffmpeg. Make sure COLMAP can use your GPU.
-- After cloning, `cd spatial-server` 
-- Create and activate `conda` environment: 
-
-    ```
-    conda env create -f environment.yaml
-    conda activate spatial-server
-    ```
-- Install the correct versions of torch, torch vision etc.: 
-    ```
-    pip uninstall torch torchvision functorch tinycudann
-    pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
-    ```
-- Install `cuda-toolkit`:
-    ```
-    conda install -c "nvidia/label/cuda-11.8.0" cuda-toolkit
-    ```
-- Install nerfstudio (only used for its `ns-process-data` command as it conveniently combines `ffmpeg` and `colmap` commands).
-    ```
-    pip install nerfstudio
-    ```
-- Install `hloc` requirements: 
-    ```
-    pip install -r third_party/hloc/requirements.txt
-    ```
-
-
-#### Start the server
-From the root of this repository, run:
-```
-flask --debug --app spatial_server/server run --host 0.0.0.0 --port 8001
-```
 
 # Map creation, registration and localization
 
@@ -130,7 +94,11 @@ python3 -m spatial_server.hloc_localization.map_creation.map_transforms --rotati
 The format of argument to `--rotation` is: \[x/y/z\]\[degrees to rotate\].
 
 To elevate the map 
-```python3 -m spatial_server.hloc_localization.map_creation.map_transforms --elevate --model_path <path_to_colmap_directory>``` 
+```
+python3 -m spatial_server.hloc_localization.map_creation.map_transforms --elevate --model_path <path_to_colmap_directory>
+``` 
 
 To create PCD: 
-```python3 -m spatial_server.hloc_localization.map_creation.map_transforms --create_pcd --model_path <path_to_colmap_directory>```
+```
+python3 -m spatial_server.hloc_localization.map_creation.map_transforms --create_pcd --model_path <path_to_colmap_directory>
+```
