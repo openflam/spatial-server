@@ -32,11 +32,11 @@ function createWaypointsGraphEntity(waypoints: WayPoint[]) {
         // Set the waypoint component attributes
         waypointEntity.setAttribute('waypoint', { name: waypoint.name });
 
-        // The navmarkers are in z-up coordinates, so we need to convert them to y-up
+        // Set the position of the waypoints
         waypointEntity.object3D.position.set(
-            waypoint.position[1], // Y -> X
-            waypoint.position[2], // Z -> Y
-            waypoint.position[0], // X -> Z
+            waypoint.position[0],
+            waypoint.position[1],
+            waypoint.position[2],
         );
 
         // Add the waypoint entity to the waypoints graph entity
@@ -53,14 +53,14 @@ function createWaypointsGraphEntity(waypoints: WayPoint[]) {
             connectionEntity.setAttribute('id', `${waypoint.name}-${neighborName}`);
             connectionEntity.setAttribute('waypoint-connection', {
                 start: {
-                    x: waypoint.position[1],
-                    y: waypoint.position[2],
-                    z: waypoint.position[0],
+                    x: waypoint.position[0],
+                    y: waypoint.position[1],
+                    z: waypoint.position[2],
                 },
                 end: {
-                    x: neighborWaypoint.position[1],
-                    y: neighborWaypoint.position[2],
-                    z: neighborWaypoint.position[0],
+                    x: neighborWaypoint.position[0],
+                    y: neighborWaypoint.position[1],
+                    z: neighborWaypoint.position[2],
                 },
                 id: `${waypoint.name}-${neighborName}`,
             });
