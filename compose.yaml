@@ -13,6 +13,7 @@ services:
     shm_size: 20g
     environment:
       - TORCH_HOME=/code/data/torch_hub
+      - BEHIND_PROXY=${BEHIND_PROXY:-false}
     deploy:
       resources:
         reservations:

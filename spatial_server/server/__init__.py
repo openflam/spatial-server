@@ -1,5 +1,6 @@
 from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
+import os
 
 from flask import Flask
 from flask_cors import CORS
@@ -73,6 +74,14 @@ def create_app(test_config=None):
     from .routes import capabilities
 
     app.register_blueprint(capabilities.bp)
+
+    # Read the BEHIND_PROXY environment variable
+    behind_proxy = os.getenv("BEHIND_PROXY", "false").lower() == "true"
+    print("BEHIND_PROXY:", behind_proxy)
+    if behind_proxy:
+        from werkzeug.middleware.proxy_fix import ProxyFix
+
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
     CORS(app)
 
