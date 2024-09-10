@@ -34,15 +34,13 @@ def download_map(map_name, download_sfm_recnstruction=False):
 
         all_filepaths = all_filepaths + point_cloud_filepaths + image_filepaths
 
-    localizer_url_filepath = [
-        (os.path.join(directory, "localization_url.txt"), "localization_url.txt")
-    ]
+    # If localization_url.txt exists, add it to the zip file
+    localization_url_filepath = os.path.join(directory, "localization_url.txt")
+    if os.path.exists(localization_url_filepath):
+        all_filepaths.append((localization_url_filepath, "localization_url.txt"))
 
-    point_cloud_pcd_filepath = [
-        (os.path.join(directory, "hloc_data", "points.pcd"), "point_cloud.pcd")
-    ]
-
-    all_filepaths = all_filepaths + localizer_url_filepath + point_cloud_pcd_filepath
+    point_cloud_pcd_filepath = os.path.join(directory, "hloc_data", "points.pcd")
+    all_filepaths.append((point_cloud_pcd_filepath, "point_cloud.pcd"))
 
     # If waypoints_graph.csv exists, add it to the zip file
     waypoints_graph_filepath = os.path.join(directory, "waypoints_graph.csv")
@@ -50,7 +48,7 @@ def download_map(map_name, download_sfm_recnstruction=False):
         all_filepaths.append((waypoints_graph_filepath, "waypoints_graph.csv"))
 
     # Create a zip file of the map data
-    # Create a BytesIO object to store the zip file in memory
+    # Create a BytesIO object to store the zip file in memory``
     memory_file = BytesIO()
     with zipfile.ZipFile(memory_file, "w") as zip_file:
         for filepath, arcname in all_filepaths:
