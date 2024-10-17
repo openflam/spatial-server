@@ -4,6 +4,7 @@ from flask import Blueprint, request, render_template, url_for
 
 from spatial_server.hloc_localization.map_creation import map_creator
 from spatial_server.server import executor
+from spatial_server.utils.run_command import run_command
 
 bp = Blueprint("create_map", __name__, url_prefix="/create_map")
 
@@ -32,8 +33,14 @@ def _create_localization_url_file(dataset_name):
         f.write(localization_url)
 
 
-def _extract_zip(zip_file, folder_path):
-    os.system(f"unzip {zip_file} -d {folder_path}")
+def _extract_zip(zip_file, folder_path, log_filepath=None):
+    unzip_command = [
+        "unzip",
+        zip_file,
+        "-d",
+        folder_path,
+    ]
+    run_command(unzip_command, log_filepath=log_filepath)
     return folder_path
 
 
@@ -43,13 +50,18 @@ def _save_and_extract_zip(request, extract_folder_name):
 
     folder_path = _create_dataset_directory(name)
     zip_file_path = _save_file(zip_file, folder_path, "input.zip")
+    log_file_path = os.path.join(folder_path, "log.txt")
+
+    # If the log file already exists, delete it
+    if os.path.exists(log_file_path):
+        os.remove(log_file_path)
 
     extract_folder_path = os.path.join(folder_path, extract_folder_name)
-    _extract_zip(zip_file_path, extract_folder_path)
+    _extract_zip(zip_file_path, extract_folder_path, log_file_path)
 
     _create_localization_url_file(name)
 
-    return extract_folder_path
+    return extract_folder_path, log_file_path
 
 
 @bp.route("/", methods=["GET"])
@@ -86,12 +98,18 @@ def upload_images():
 
 @bp.route("/polycam", methods=["POST"])
 def upload_polycam():
-    polycam_directory = _save_and_extract_zip(
-        request, extract_folder_name="polycam_data"
-    )
-    # Call the map builder function
-    executor.submit(map_creator.create_map_from_polycam_output, polycam_directory)
-    return "Polycam output uploaded and map building started"
+    try:
+        polycam_directory, log_file_path = _save_and_extract_zip(
+            request, extract_folder_name="polycam_data"
+        )
+        # Call the map builder function
+        executor.submit(
+            map_creator.create_map_from_polycam_output, polycam_directory, log_file_path
+        )
+        return "Polycam output uploaded and map building started", 200
+
+    except Exception as e:
+        return f"Error uploading Polycam. See server logs for details.", 500
 
 
 @bp.route("/kiriengine", methods=["POST"])

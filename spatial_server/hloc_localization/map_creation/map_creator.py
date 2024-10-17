@@ -211,8 +211,8 @@ def create_map_from_kiri_engine_output(data_dir):
     load_cache.load_db_data(shared_data)
 
 
-def create_map_from_polycam_output(data_dir):
-    polycam.build_map_from_polycam_output(data_dir)
+def create_map_from_polycam_output(data_dir, log_filepath=None):
+    polycam.build_map_from_polycam_output(data_dir, log_filepath=log_filepath)
 
     # Add the map to shared data
     load_cache.load_db_data(shared_data)

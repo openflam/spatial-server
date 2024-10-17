@@ -1,14 +1,18 @@
+import contextlib
 import json
+import logging
 import os
 from pathlib import Path
 import sqlite3
-import subprocess
+import sys
 
 import numpy as np
 from scipy.spatial.transform import Rotation
 
 from . import map_creator
-from .utils import run_command
+from spatial_server.utils.run_command import run_command
+from spatial_server.utils.print_log import print_log
+from third_party.hloc.hloc import logger as hloc_logger, handler as hloc_default_handler
 
 
 def _prepare_cameras_file(transforms_json, output_directory):
@@ -152,8 +156,6 @@ def _update_cameras_db(db_path, cameras_info):
     conn.commit()
     conn.close()
 
-    print(f"Updated cameras database. Added {len(cameras_info)} cameras.")
-
 
 def _update_images_db(db_path, imgname_to_imgid, imgname_to_cameraid):
     """
@@ -216,7 +218,7 @@ def _get_images_without_correspondences(db_path):
 
 
 def _delete_images_without_correspondences(
-    db_path, input_recon_path, output_recon_path
+    db_path, input_recon_path, output_recon_path, log_filepath=None
 ):
     image_ids_to_delete = _get_images_without_correspondences(db_path)
     image_ids_to_delete_str = "\n".join(map(str, image_ids_to_delete))
@@ -225,7 +227,6 @@ def _delete_images_without_correspondences(
     with open(image_ids_to_delete_filepath, "w") as f:
         f.write(image_ids_to_delete_str)
 
-    print("Deleting images: ", image_ids_to_delete)
     os.makedirs(output_recon_path, exist_ok=True)
     images_deleter_command = [
         "colmap",
@@ -237,10 +238,10 @@ def _delete_images_without_correspondences(
         "--image_ids_path",
         f"{image_ids_to_delete_filepath}",
     ]
-    run_command(images_deleter_command)
+    run_command(images_deleter_command, log_filepath=log_filepath)
 
 
-def build_map_from_polycam_output(polycam_data_directory):
+def build_map_from_polycam_output(polycam_data_directory, log_filepath=None):
     # Define directories
     ns_data_directory = Path(polycam_data_directory).parent / "ns_data"
     images_directory = ns_data_directory / "images"
@@ -268,7 +269,8 @@ def build_map_from_polycam_output(polycam_data_directory):
             f"{ns_data_directory}",
             "--min-blur-score",
             "0",
-        ]
+        ],
+        log_filepath=log_filepath,
     )
 
     # Read transforms.json file
@@ -296,8 +298,8 @@ def build_map_from_polycam_output(polycam_data_directory):
         "--image_path",
         f"{ns_data_directory}/images",
     ]
-    print("Extracting features...")
-    run_command(extract_features_command)
+    print_log("Extracting features...", log_filepath)
+    run_command(extract_features_command, log_filepath=log_filepath)
 
     # Get mapping from name to image_id
     conn = sqlite3.connect(f"{colmap_directory}/database.db")
@@ -345,8 +347,8 @@ def build_map_from_polycam_output(polycam_data_directory):
         "--database_path",
         f"{colmap_directory}/database.db",
     ]
-    print("Matching features...")
-    run_command(matcher_command)
+    print_log("Matching features...", log_filepath)
+    run_command(matcher_command, log_filepath=log_filepath)
 
     # Delete images without correspondences
     _delete_images_without_correspondences(
@@ -368,12 +370,31 @@ def build_map_from_polycam_output(polycam_data_directory):
         "--output_path",
         f"{final_recon_output_directory}",
     ]
-    print("Triangulating points...")
-    run_command(triangulation_command)
+    print_log("Triangulating points...", log_filepath)
+    run_command(triangulation_command, log_filepath=log_filepath)
 
     # Create hloc map from the final reconstruction
-    map_creator.create_map_from_colmap_data(
-        colmap_model_path=final_recon_output_directory,
-        image_dir=f"{ns_data_directory}/images",
-        output_dir=hloc_data_directory,
-    )
+    # Redirect its output to a log file if log_filepath is provided
+    output_file_obj = sys.stdout if log_filepath is None else open(log_filepath, "a")
+
+    # Redirect hloc logger output to the log file
+    if log_filepath is not None:
+        hloc_logger.removeHandler(hloc_default_handler)
+        hloc_logger.addHandler(logging.FileHandler(log_filepath))
+
+    with contextlib.redirect_stdout(output_file_obj), contextlib.redirect_stderr(
+        output_file_obj
+    ):
+        try:
+            print("Creating hloc map from the colmap reconstruction...")
+            map_creator.create_map_from_colmap_data(
+                colmap_model_path=final_recon_output_directory,
+                image_dir=f"{ns_data_directory}/images",
+                output_dir=hloc_data_directory,
+            )
+            print("Map creation COMPLETED...")
+        except Exception as e:
+            print("Map creation FAILED...ERROR:")
+            print(e)
+    if log_filepath is not None:
+        output_file_obj.close()

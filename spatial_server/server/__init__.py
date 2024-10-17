@@ -7,6 +7,7 @@ from flask_cors import CORS
 
 from .config import Config
 from spatial_server.hloc_localization import load_cache
+from third_party.hloc.hloc import logger
 
 # Create an executor to run map building in the background
 executor = ProcessPoolExecutor(mp_context=multiprocessing.get_context("spawn"))
