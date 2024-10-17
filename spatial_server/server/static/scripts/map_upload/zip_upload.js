@@ -22,17 +22,18 @@ function uploadZip(serverAddress, progressBar, submitButton) {
         if (event.lengthComputable) {
             const percentComplete = (event.loaded / event.total) * 100;
             progressBar.style.width = percentComplete + '%';
+            progressBar.innerText = Math.round(percentComplete) + '%';
         }
     };
 
     xhr.onload = function () {
         if (xhr.status === 200) {
-            alert('Uplaoded zip file successfully to ' + serverAddress);
+            alert('Uploded zip file successfully to ' + serverAddress);
 
             progressBar.style.width = '100%';
             submitButton.disabled = true;
         } else {
-            alert('Failed to upload zip to the server. Server response: ' + response.statusText);
+            alert('Failed to upload zip to the server. Server response: ' + xhr.statusText);
             submitButton.disabled = true;
         }
     };
