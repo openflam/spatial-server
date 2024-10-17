@@ -17,13 +17,11 @@ from third_party.hloc.hloc import (
     pairs_from_covisibility,
     match_features,
     triangulation,
-    pairs_from_retrieval,
-    localize_sfm,
-    visualization,
 )
 
 from .. import config, load_cache
 from spatial_server.server import shared_data
+from spatial_server.utils.print_log import print_log
 from . import map_aligner, map_cleaner, kiri_engine, polycam
 
 
@@ -213,6 +211,3 @@ def create_map_from_kiri_engine_output(data_dir):
 
 def create_map_from_polycam_output(data_dir, log_filepath=None):
     polycam.build_map_from_polycam_output(data_dir, log_filepath=log_filepath)
-
-    # Add the map to shared data
-    load_cache.load_db_data(shared_data)

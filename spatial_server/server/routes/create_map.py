@@ -3,7 +3,8 @@ import os
 from flask import Blueprint, request, render_template, url_for
 
 from spatial_server.hloc_localization.map_creation import map_creator
-from spatial_server.server import executor
+from spatial_server.hloc_localization import load_cache
+from spatial_server.server import executor, shared_data
 from spatial_server.utils.run_command import run_command
 
 bp = Blueprint("create_map", __name__, url_prefix="/create_map")
@@ -103,9 +104,11 @@ def upload_polycam():
             request, extract_folder_name="polycam_data"
         )
         # Call the map builder function
-        executor.submit(
+        future = executor.submit(
             map_creator.create_map_from_polycam_output, polycam_directory, log_file_path
         )
+        # Load the map data into the shared_data dictionary
+        future.add_done_callback(lambda f: load_cache.load_db_data(shared_data))
         return "Polycam output uploaded and map building started", 200
 
     except Exception as e:
