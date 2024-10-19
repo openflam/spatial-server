@@ -23,7 +23,8 @@ git clone --recurse-submodules https://github.com/SagarB-97/spatial-server.git
 ## Running the server
 Run `docker compose up --detach`. To print logs, run `docker compose logs`. To shutdown, `docker compose down`.
 
-If behind proxy, set the environment variable `BEHIND_PROXY` to `true`: `BEHIND_PROXY=true docker compose up --detach`.
+- If behind proxy, set the environment variable `BEHIND_PROXY` to `true`: `BEHIND_PROXY=true docker compose up --detach`.
+- HTTPS is on by default. To turn off HTTPS, set the environment variable `HTTPS` to `false`: `HTTPS=false docker compose up --detach`.
 
 **Note**: If you're making code changes, to ensure that the code changes are reflected in the docker, run: `docker compose up --detach --force-recreate --renew-anon-volumes`.
 
