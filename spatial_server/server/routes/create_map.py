@@ -72,18 +72,28 @@ def show_map_upload_form():
 
 @bp.route("/video", methods=["POST"])
 def upload_video():
-    video = request.files["video"]
-    name = request.form.get("name", default="default_map")
-    num_frames_perc = request.form.get("num_frames_perc", default=25, type=float)
+    try:
+        video = request.files["video"]
+        name = request.form.get("name", default="default_map")
+        num_frames_perc = request.form.get("num_frames_perc", default=25, type=float)
 
-    folder_path = _create_dataset_directory(name)
-    video_path = _save_file(video, folder_path, "video.mp4")
-    _create_localization_url_file(name)
+        folder_path = _create_dataset_directory(name)
+        video_path = _save_file(video, folder_path, "video.mp4")
+        log_filepath = os.path.join(folder_path, "log.txt")
+        _create_localization_url_file(name)
 
-    # Call the map builder function
-    executor.submit(map_creator.create_map_from_video, video_path, num_frames_perc)
+        # Call the map builder function
+        future = executor.submit(
+            map_creator.create_map_from_video, video_path, num_frames_perc, log_filepath
+        )
 
-    return "Video uploaded and map building started"
+        # Load the map data into the shared_data dictionary
+        future.add_done_callback(lambda f: load_cache.load_db_data(shared_data))
+
+        return "Video uploaded and map building started", 200
+
+    except Exception as e:
+        return f"Error uploading Polycam. See server logs for details.", 500
 
 
 @bp.route("/images", methods=["POST"])

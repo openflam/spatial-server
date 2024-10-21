@@ -10,8 +10,6 @@ import os
 import subprocess
 from pathlib import Path
 
-import ffmpeg
-
 from third_party.hloc.hloc import (
     extract_features,
     pairs_from_covisibility,
@@ -21,8 +19,9 @@ from third_party.hloc.hloc import (
 
 from .. import config, load_cache
 from spatial_server.server import shared_data
+from spatial_server.utils.run_command import run_command
 from spatial_server.utils.print_log import print_log
-from . import map_aligner, map_cleaner, kiri_engine, polycam
+from . import map_aligner, map_cleaner, kiri_engine, polycam, video
 
 
 def create_map_from_colmap_data(
@@ -125,44 +124,6 @@ def create_map_from_colmap_data(
     map_cleaner.clean_map(sfm_reconstruction_path)
 
 
-def create_map_from_video(video_path, num_frames_perc=25):
-    # Estimate the number of frames to extract
-    probe = ffmpeg.probe(video_path)
-    video_stream = next(
-        stream for stream in probe["streams"] if stream["codec_type"] == "video"
-    )
-    frame_rate_num, frame_rate_den = video_stream["avg_frame_rate"].split("/")
-    frame_rate = float(frame_rate_num) / float(frame_rate_den)
-    duration = float(video_stream["duration"])
-    num_frames_estimate = duration * frame_rate
-    num_frames_to_extract = num_frames_estimate * (num_frames_perc / 100)
-    num_frames_to_extract = int(min(num_frames_to_extract, num_frames_estimate))
-    print(
-        f"Estimated number of frames to extract: {num_frames_to_extract} / {int(num_frames_estimate)}"
-    )
-
-    # Call ns-process-data
-    ns_process_output_dir = os.path.dirname(video_path)
-    subprocess.run(
-        [
-            "ns-process-data",
-            "video",
-            "--data",
-            str(video_path),
-            "--output_dir",
-            str(ns_process_output_dir),
-            "--num-frames-target",
-            str(num_frames_to_extract),
-        ]
-    )
-
-    # Build the hloc map and features
-    create_map_from_colmap_data(ns_process_output_dir)
-
-    # Add the map to shared data
-    load_cache.load_db_data(shared_data)
-
-
 def create_map_from_reality_capture(data_dir):
     # TODO: Use reality capture poses
 
@@ -200,6 +161,10 @@ def create_map_from_images(image_dir):
 
     # Add the map to shared data
     load_cache.load_db_data(shared_data)
+
+
+def create_map_from_video(video_path, num_frames_perc, log_filepath=None):
+    video.create_map_from_video(video_path, num_frames_perc, log_filepath=log_filepath)
 
 
 def create_map_from_kiri_engine_output(data_dir):
