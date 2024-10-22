@@ -18,6 +18,7 @@
         <h2 class="text-center">Spatial Server</h2>
         <div class="row-cols-1 justify-content-center">
             <button type="button" class="btn btn-primary mb-2" id="create-map">Create Map</button>
+            <button type="button" class="btn btn-primary mb-2" id="scale-map">Scale Map</button>
             <button type="button" class="btn btn-primary mb-2" id="download-map">Download Map</button>
             <button type="button" class="btn btn-primary mb-2" id="register-map">Register Map</button>
             <button type="button" class="btn btn-primary mb-2" id="save-image-pose">Save Image Pose</button>
@@ -38,6 +39,9 @@
     <script>
         document.getElementById('create-map').addEventListener('click', function () {
             window.location.href = "/create_map";
+        });
+        document.getElementById('scale-map').addEventListener('click', function () {
+            window.location.href = "/scale_map";
         });
         document.getElementById('download-map').addEventListener('click', function () {
             window.location.href = "/download_map";
