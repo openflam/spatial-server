@@ -15,15 +15,22 @@
 
 <body>
     <div class="container-sm position-absolute top-50 start-50 translate-middle">
-        <h2 class="text-center">Spatial Server</h2>
-        <div class="row-cols-1 justify-content-center">
-            <button type="button" class="btn btn-primary mb-2" id="create-map">Create Map</button>
-            <button type="button" class="btn btn-primary mb-2" id="scale-map">Scale Map</button>
-            <button type="button" class="btn btn-primary mb-2" id="download-map">Download Map</button>
-            <button type="button" class="btn btn-primary mb-2" id="register-map">Register Map</button>
-            <button type="button" class="btn btn-primary mb-2" id="save-image-pose">Save Image Pose</button>
-            <button type="button" class="btn btn-primary mb-2" id="upload-waypoints">Upload Waypoints</button>
-            <button type="button" class="btn btn-primary mb-2" id="explore-waypoints">Explore Waypoints</button>
+        <div class="row">
+            <!-- Column 1: Map Creation -->
+            <div class="col-md-6 d-flex flex-column">
+                <h4 class="text-center">Map Creation</h4>
+                <button type="button" class="btn btn-primary mb-2" id="create-map">Create Map</button>
+                <button type="button" class="btn btn-primary mb-2" id="scale-map">Scale Map</button>
+                <button type="button" class="btn btn-primary mb-2" id="download-map">Download Map</button>
+                <button type="button" class="btn btn-primary mb-2" id="save-image-pose">Save Image Pose</button>
+            </div>
+
+            <!-- Column 2: Waypoints -->
+            <div class="col-md-6 d-flex flex-column">
+                <h4 class="text-center">Waypoints</h4>
+                <button type="button" class="btn btn-success mb-2" id="upload-waypoints">Upload Waypoints</button>
+                <button type="button" class="btn btn-success mb-2" id="explore-waypoints">Explore Waypoints</button>
+            </div>
         </div>
     </div>
 
