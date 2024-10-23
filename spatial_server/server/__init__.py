@@ -80,6 +80,10 @@ def create_app(test_config=None):
 
     app.register_blueprint(scale_map.bp)
 
+    from .routes import rotate_map
+
+    app.register_blueprint(rotate_map.bp)
+
     # Read the BEHIND_PROXY environment variable
     behind_proxy = os.getenv("BEHIND_PROXY", "false").lower() == "true"
     print("BEHIND_PROXY:", behind_proxy)

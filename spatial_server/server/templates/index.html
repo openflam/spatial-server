@@ -21,6 +21,7 @@
                 <h4 class="text-center">Map Creation</h4>
                 <button type="button" class="btn btn-primary mb-2" id="create-map">Create Map</button>
                 <button type="button" class="btn btn-primary mb-2" id="scale-map">Scale Map</button>
+                <button type="button" class="btn btn-primary mb-2" id="rotate-map">Rotate Map</button>
                 <button type="button" class="btn btn-primary mb-2" id="download-map">Download Map</button>
                 <button type="button" class="btn btn-primary mb-2" id="save-image-pose">Save Image Pose</button>
             </div>
@@ -49,6 +50,9 @@
         });
         document.getElementById('scale-map').addEventListener('click', function () {
             window.location.href = "/scale_map";
+        });
+        document.getElementById('rotate-map').addEventListener('click', function () {
+            window.location.href = "/rotate_map";
         });
         document.getElementById('download-map').addEventListener('click', function () {
             window.location.href = "/download_map";
