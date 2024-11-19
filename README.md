@@ -36,4 +36,4 @@ Once started, visit the landing page at `https://localhost:8001`. You should see
 
 <img src="doc/images/landing_page.png" alt="Landing Page" width="400">
 
-Visit [OpenVPS organization website](https://openvps.github.io/) for more information on how to use the server to create maps, set up a localization service and tag waypoints.
+Visit [OpenFLAME organization website](https://openflam.github.io/pages/tools/map-server.html) for more information on how to use the server to create maps, set up a localization service and tag waypoints.
