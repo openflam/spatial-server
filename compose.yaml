@@ -1,18 +1,30 @@
+version: '3.8'
+
 services:
+  # Redis Service
+  redis:
+    image: redis:6.2
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # Flask Server
   spatial-server:
     build: .
     command: bash start_server.sh
     volumes:
       - ./:/code
     ports:
-      - 8001:8001 # Flask server
-      - 8888:8888 # Jupyter notebook
-    ipc: host
-    shm_size: 20g
+      - "8001:8001"  # Flask server
+      - "8888:8888"  # Jupyter notebook
     environment:
       - TORCH_HOME=/code/data/torch_hub
       - BEHIND_PROXY=${BEHIND_PROXY:-false}
       - HTTPS=${HTTPS:-true} # Default is HTTPS
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     deploy:
       resources:
         reservations:
@@ -20,3 +32,28 @@ services:
             - driver: nvidia
               count: all
               capabilities: [ gpu ]
+    depends_on:
+      - redis
+
+  # Celery Worker
+  celery-worker:
+    build: .
+    command: celery -A spatial_server.celery_app.celery_app worker --loglevel=info --concurrency=1
+    volumes:
+      - ./:/code
+    environment:
+      - TORCH_HOME=/code/data/torch_hub
+      - BEHIND_PROXY=${BEHIND_PROXY:-false}
+      - HTTPS=${HTTPS:-true} # Default is HTTPS
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    deploy:
+      # replicas: 2
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
+    depends_on:
+      - redis

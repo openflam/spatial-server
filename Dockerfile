@@ -93,7 +93,7 @@ RUN python3 -m pip install --upgrade pip
 # Install python dependencies
 RUN pip install flask flask-cors ffmpeg-python
 RUN pip install torch==2.0.1+cu118 torchvision==0.15.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
-RUN pip install nerfstudio
+RUN pip install nerfstudio celery redis
 
 RUN mkdir /dependencies
 COPY ./third_party/hloc/requirements.txt /dependencies/requirements.txt
@@ -111,3 +111,13 @@ RUN mkdir /ssl
 RUN openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 \
     -subj "/C=US/ST=Pennsylvania/L=Pittsburgh/O=Sagar/CN=Sagar" \
     -keyout /ssl/key.pem  -out /ssl/cert.pem
+
+# Copy project files
+COPY . /code
+
+# Set environment variables for Celery
+ENV CELERY_BROKER_URL=redis://redis:6379/0
+ENV CELERY_RESULT_BACKEND=redis://redis:6379/0
+
+# Expose necessary ports (without Flower)
+EXPOSE 8001 8888
