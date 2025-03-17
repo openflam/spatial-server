@@ -18,12 +18,14 @@
         <h2 class="text-center">Select map</h2>
         <div class="p-3 mb-2 bg-light text-dark">
             Select the map for which you want to collect image and pose data.
+            This data will be used to scale the map and it is ONLY required for maps created using a video.
+            Capture around 10 images.
         </div>
         <div class="mb-3">
             <label for="map_name" class="form-label">Map name</label>
             <select id="map_name" class="form-control custom-select">
                 {% for map_name in map_names_list %}
-                  <option value="{{ map_name }}">{{ map_name }}</option>
+                <option value="{{ map_name }}">{{ map_name }}</option>
                 {% endfor %}
             </select>
         </div>

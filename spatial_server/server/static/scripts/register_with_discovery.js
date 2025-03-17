@@ -1,6 +1,6 @@
 function registerWithDiscovery() {
     const serverAddress = '/register_with_discovery/';
-    
+
     const url = document.getElementById('url-prefix').textContent + document.getElementById('url').value;
     const latitute = document.getElementById('latitude').value;
     const longitute = document.getElementById('longitude').value;
@@ -16,14 +16,14 @@ function registerWithDiscovery() {
         method: 'POST',
         body: formData,
     })
-    .then(response => {
-        if (response.ok) {
-            alert('Registered successfully!');
-        } else {
-            alert('Failed to register: ' + response.statusText);
-        }
-    })
-    .catch(error => {
-        alert('Error registering: ' + error.message);
-    });
+        .then(response => {
+            if (response.ok) {
+                alert('Registered successfully!');
+            } else {
+                alert('Failed to register: ' + response.statusText);
+            }
+        })
+        .catch(error => {
+            alert('Error registering: ' + error.message);
+        });
 }

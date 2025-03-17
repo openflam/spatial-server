@@ -18,14 +18,14 @@ function uploadVideo() {
         method: 'POST',
         body: formData,
     })
-    .then(response => {
-        if (response.ok) {
-            alert('Video uploaded successfully.');
-        } else {
-            alert('Failed to upload video to the server. Server response: ' + response.statusText);
-        }
-    })
-    .catch(error => {
-        alert('Error uploading video to the server: ' + error.message);
-    });
+        .then(response => {
+            if (response.ok) {
+                alert('Video uploaded successfully.');
+            } else {
+                alert('Failed to upload video to the server. Server response: ' + response.statusText);
+            }
+        })
+        .catch(error => {
+            alert('Error uploading video to the server: ' + error.message);
+        });
 }

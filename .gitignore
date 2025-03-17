@@ -22,3 +22,6 @@ yolov8x-seg.pt
 # Ignore notebook uses for testing
 temp.ipynb
 .ipynb_checkpoints/
+
+# camera pose collector
+node_modules/
