@@ -25,7 +25,8 @@ from . import map_aligner, map_cleaner, kiri_engine, polycam, video
 
 
 def create_map_from_colmap_data(
-    ns_process_output_dir=None, colmap_model_path=None, image_dir=None, output_dir=None
+    ns_process_output_dir=None, colmap_model_path=None, image_dir=None, output_dir=None,
+    manhattan_align=True, elevate=True, clean=True
 ):
 
     # Build the hloc map and features
@@ -111,13 +112,15 @@ def create_map_from_colmap_data(
         print(e)
         return
 
-    # Align the model using Manhattan
-    print("Aligning the model using Manhattan..")
-    map_aligner.align_colmap_model_manhattan(image_dir, sfm_reconstruction_path)
+    if manhattan_align:
+        # Align the model using Manhattan
+        print("Aligning the model using Manhattan..")
+        map_aligner.align_colmap_model_manhattan(image_dir, sfm_reconstruction_path)
 
-    # Elevate the model to ground level
-    print("Elevate map to ground level..")
-    map_cleaner.elevate_existing_reconstruction(sfm_reconstruction_path)
+    if elevate:
+        # Elevate the model to ground level
+        print("Elevate map to ground level..")
+        map_cleaner.elevate_existing_reconstruction(sfm_reconstruction_path)
 
     # Clean the map by removing outliers and save it as a PCD
     print("Cleaning the map..")
@@ -174,5 +177,5 @@ def create_map_from_kiri_engine_output(data_dir):
     load_cache.load_db_data(shared_data)
 
 
-def create_map_from_polycam_output(data_dir, log_filepath=None):
-    polycam.build_map_from_polycam_output(data_dir, log_filepath=log_filepath)
+def create_map_from_polycam_output(data_dir, log_filepath=None, negate_y_mesh_align=True):
+    polycam.build_map_from_polycam_output(data_dir, log_filepath=log_filepath, negate_y_mesh_align=negate_y_mesh_align)

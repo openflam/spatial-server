@@ -113,9 +113,15 @@ def upload_polycam():
         polycam_directory, log_file_path = _save_and_extract_zip(
             request, extract_folder_name="polycam_data"
         )
+        negate_y_mesh_align = request.form.get("negate_y_mesh_align")
+        if negate_y_mesh_align == "true":
+            negate_y_mesh_align = True
+        else:
+            negate_y_mesh_align = False
+
         # Call the map builder function
         future = executor.submit(
-            map_creator.create_map_from_polycam_output, polycam_directory, log_file_path
+            map_creator.create_map_from_polycam_output, polycam_directory, log_file_path, negate_y_mesh_align
         )
         # Load the map data into the shared_data dictionary
         future.add_done_callback(lambda f: load_cache.load_db_data(shared_data))
