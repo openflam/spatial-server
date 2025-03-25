@@ -42,6 +42,12 @@ def download_map(map_name, download_sfm_recnstruction=False):
     point_cloud_pcd_filepath = os.path.join(directory, "hloc_data", "points.pcd")
     all_filepaths.append((point_cloud_pcd_filepath, "point_cloud.pcd"))
 
+    # If the map mesh exists, add it to the zip file
+    map_mesh_filepath = os.path.join(directory, "polycam_data", "raw.glb")
+    if os.path.exists(map_mesh_filepath):
+        os.utime(map_mesh_filepath)
+        all_filepaths.append((map_mesh_filepath, "mesh.glb"))
+
     # If waypoints_graph.csv exists, add it to the zip file
     waypoints_graph_filepath = os.path.join(directory, "waypoints_graph.csv")
     if os.path.exists(waypoints_graph_filepath):

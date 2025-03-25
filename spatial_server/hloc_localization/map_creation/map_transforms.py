@@ -3,9 +3,30 @@ Module to be run as a script to rotate and elevate the map.
 """
 
 import argparse
+from pathlib import Path
+import os
+
+import pycolmap
 
 from . import map_aligner, map_cleaner
 
+
+def transform_map_from_matrix(model_path, transform_matrix, output_path=None):
+    print(f"Transforming model by matrix...")
+    model_path = Path(model_path)
+    reconstruction = pycolmap.Reconstruction(model_path)
+    reconstruction.transform(transform_matrix)
+
+    if output_path is None:
+        output_path = model_path
+    else:
+        os.makedirs(output_path, exist_ok=True)
+
+    reconstruction.write(output_path)
+
+    # Create PCD
+    map_cleaner.clean_map(model_path=output_path)
+    print(f"Created cleaned PCD file")
 
 def rotate_and_elevate(model_path, rotation, elevate, create_pcd):
     if rotation is not None:

@@ -12,6 +12,7 @@ from scipy.spatial.transform import Rotation
 from . import map_creator
 from spatial_server.utils.run_command import run_command
 from spatial_server.utils.print_log import print_log
+from spatial_server.hloc_localization.map_creation.map_transforms import transform_map_from_matrix
 from third_party.hloc.hloc import logger as hloc_logger, handler as hloc_default_handler
 
 
@@ -240,8 +241,45 @@ def _delete_images_without_correspondences(
     ]
     run_command(images_deleter_command, log_filepath=log_filepath)
 
+def _permute_transform_matrix_axis(transform_matrix, axis_permutation):
+    euler_rotation = Rotation.from_matrix(transform_matrix[:3,:3]).as_euler('xyz', degrees=True)
+    translation = transform_matrix[:3,3]
+    euler_rotation_axis_change = np.array([euler_rotation[axis_permutation[0]], euler_rotation[axis_permutation[1]], euler_rotation[axis_permutation[2]]])
+    rot_mat_axis_change = Rotation.from_euler('xyz', euler_rotation_axis_change, degrees=True).as_matrix()
+    
+    translation_axis_change = np.array([[translation[axis_permutation[0]]], [translation[axis_permutation[1]]], [translation[axis_permutation[2]]]])
+    
+    transform_mat_axis_change = np.concatenate((rot_mat_axis_change, translation_axis_change), axis=1)
+    transform_mat_axis_change = np.concatenate((transform_mat_axis_change, np.array([[0,0,0,1]])), axis=0)
 
-def build_map_from_polycam_output(polycam_data_directory, log_filepath=None):
+    return transform_mat_axis_change
+
+def _transform_hloc_reconstruction(hloc_data_directory, alignment_transform_matrix, negate_y_rotation=True):
+    # For some reason, I have to 1. Negate the y rotation in Euler, and 2. Permute the axis x,y,z to z,x,y
+    # to get the correct alignment.
+
+    # Negate the y rotation in Euler
+    if negate_y_rotation:
+        print("Negating y rotation in Euler...")
+        euler_rotation = Rotation.from_matrix(alignment_transform_matrix[:3,:3]).as_euler('xyz', degrees=True)
+        euler_rotation_y_neg = np.array([euler_rotation[0], -euler_rotation[1], euler_rotation[2]])
+        rot_mat_y_neg = Rotation.from_euler('xyz', euler_rotation_y_neg, degrees=True).as_matrix()
+
+        translation = alignment_transform_matrix[:3,3]
+        translation = np.array([[translation[0]], [translation[1]], [translation[2]]])
+
+        transform_mat_y_neg = np.concatenate((rot_mat_y_neg, translation), axis=1)
+        transform_mat_y_neg = np.concatenate((transform_mat_y_neg, np.array([[0,0,0,1]])), axis=0)
+        alignment_transform_matrix = transform_mat_y_neg
+
+    # Permute the axis x,y,z to z,x,y
+    transform_mat_axis_permute = _permute_transform_matrix_axis(alignment_transform_matrix, [2,0,1])
+    
+    # Transform the hloc reconstruction
+    transform_map_from_matrix(hloc_data_directory / "sfm_reconstruction", transform_mat_axis_permute[:3,:])
+
+
+def build_map_from_polycam_output(polycam_data_directory, log_filepath=None, negate_y_mesh_align=True):
     # Define directories
     ns_data_directory = Path(polycam_data_directory).parent / "ns_data"
     images_directory = ns_data_directory / "images"
@@ -391,7 +429,23 @@ def build_map_from_polycam_output(polycam_data_directory, log_filepath=None):
                 colmap_model_path=final_recon_output_directory,
                 image_dir=f"{ns_data_directory}/images",
                 output_dir=hloc_data_directory,
+                manhattan_align=False,
+                elevate=False,
             )
+
+            # Transform the map to the correct orientation using the mesh_info.json file
+            print("Transforming the map using mesh_info.json...")
+            # Read alignment transform
+            with open(Path(polycam_data_directory) / "mesh_info.json") as f:
+                mesh_info = json.load(f)
+
+            alignment_transform = np.array(mesh_info["alignmentTransform"])
+            alignment_transform = alignment_transform.reshape((4,4)).T
+            _transform_hloc_reconstruction(
+                hloc_data_directory, alignment_transform,
+                negate_y_rotation=negate_y_mesh_align
+            )
+
             print("Map creation COMPLETED...")
         except Exception as e:
             print("Map creation FAILED...ERROR:")
