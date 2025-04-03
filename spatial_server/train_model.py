@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 import sys
 from collections import defaultdict
@@ -17,6 +18,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from torch.cuda.amp import autocast, GradScaler
+import pillow_heif
+pillow_heif.register_heif_opener()
+
 
 torch_hub_dir = Path('data/torch_hub')
 if not torch_hub_dir.exists():
@@ -29,19 +33,20 @@ class ContrastiveDataset(Dataset):
         self.root_dir = root_dir
         self.anchor_folder = anchor_folder
         self.transform = transform
-        
+
         self.anchor_images = sorted([f for f in os.listdir(os.path.join(root_dir, anchor_folder)) 
-                              if f.lower().endswith(('.png', '.jpg', '.jpeg', '.heif', '.HEIC'))])
+                              if f.lower().endswith(('.png', '.jpg', '.jpeg', '.heif'))])
         # print(self.anchor_images)
         
-        self.other_folders = [f'{f}/images' for f in os.listdir(root_dir) 
-                              if not f.startswith('.') and os.path.isdir(os.path.join(root_dir, f)) and f'{f}/images' != anchor_folder]
-        print(self.other_folders)
+        self.other_folders = [f for f in os.listdir(root_dir) 
+                              if not f.startswith('.') and os.path.isdir(os.path.join(root_dir, f)) and f != anchor_folder]
+        # print(self.other_folders)
         
         self.other_images = {}
         for folder in self.other_folders:
             self.other_images[folder] = [f for f in os.listdir(os.path.join(root_dir, folder)) 
-                                         if f.lower().endswith(('.png', '.jpg', '.jpeg', '.heif', '.HEIC'))]
+                                         if f.lower().endswith(('.png', '.jpg', '.jpeg', '.heif'))]
+        # print(self.other_images)
 
     def __len__(self):
         return len(self.anchor_images)
@@ -104,21 +109,21 @@ class ProjectionHead(nn.Module):
 
 
 def train_model(map, num_epochs=20, batch_size=16, lr=1e-5):
-    dataset_names = []
-    for dataset in os.listdir("/code/data/map_data/"):
-        if not dataset.startswith('.'): dataset_names.append(dataset)
+    # dataset_names = []
+    # for dataset in os.listdir("/code/data/map_data/"):
+    #     if not dataset.startswith('.'): dataset_names.append(dataset)
 
-    print(dataset_names)
+    # print(dataset_names)
 
-    datasets = {}
+    # datasets = {}
 
-    for dataset_name in dataset_names:
-        paths = {}
-        paths['querys_path'] = f'/code/data/query_data/{dataset_name}/images'
-        paths['imgs_path'] = f'/code/data/map_data/{dataset_name}/images'
-        datasets[dataset_name] = paths
+    # for dataset_name in dataset_names:
+    #     paths = {}
+    #     paths['querys_path'] = f'/code/data/query_data/{dataset_name}/images'
+    #     paths['imgs_path'] = f'/code/data/map_data/{dataset_name}/images'
+    #     datasets[dataset_name] = paths
 
-    print(datasets)
+    # print(datasets)
 
     # Set device
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -141,12 +146,12 @@ def train_model(map, num_epochs=20, batch_size=16, lr=1e-5):
     projection_head = ProjectionHead(model.visual.output_dim, 512, 256).to(device)
 
     # Prepare dataset and dataloader
-    root_dir = "/code/data/map_data/"  # This should contain your folders
+    root_dir = "Photos_split/train"  # This should contain your folders
     transform = transforms.Compose([
         preprocess,
         transforms.Lambda(lambda x: x.squeeze(0))  # Remove batch dimension added by CLIP's preprocess
     ])
-    anchor_folder = f"{map}/images"
+    anchor_folder = map
 
     dataset = ContrastiveDataset(root_dir, anchor_folder, transform=transform)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)  # Reduced batch size
@@ -194,5 +199,59 @@ def train_model(map, num_epochs=20, batch_size=16, lr=1e-5):
         print(f"Epoch [{epoch+1}/{num_epochs}], Average Loss: {avg_loss:.4f}")
 
     # Save the fine-tuned model
-    torch.save(model.state_dict(), f"spatial_server/models/{map}_ViTL14-336px.pth")
-    torch.save(projection_head.state_dict(), f"spatial_server/models/{map}_projection_head.pth")
+    torch.save(model.state_dict(), f"models/{map}_ViTL14-336px.pth")
+    torch.save(projection_head.state_dict(), f"models/{map}_projection_head.pth")
+
+def split_dataset(base_dir='Photos', output_dir='Photos_split', train_ratio=0.8):
+    # Ensure reproducibility
+    random.seed(42)
+
+    # Create train/test directories
+    train_dir = os.path.join(output_dir, 'train')
+    test_dir = os.path.join(output_dir, 'test')
+    os.makedirs(train_dir, exist_ok=True)
+    os.makedirs(test_dir, exist_ok=True)
+
+    for folder_name in os.listdir(base_dir):
+        folder_path = os.path.join(base_dir, folder_name)
+        if not os.path.isdir(folder_path):
+            continue
+
+        images = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+        random.shuffle(images)
+
+        split_idx = int(len(images) * train_ratio)
+        train_images = images[:split_idx]
+        test_images = images[split_idx:]
+
+        # Create class folders
+        train_class_dir = os.path.join(train_dir, folder_name)
+        test_class_dir = os.path.join(test_dir, folder_name)
+        os.makedirs(train_class_dir, exist_ok=True)
+        os.makedirs(test_class_dir, exist_ok=True)
+
+        # Copy files
+        for img in train_images:
+            shutil.copy2(os.path.join(folder_path, img), os.path.join(train_class_dir, img))
+        for img in test_images:
+            shutil.copy2(os.path.join(folder_path, img), os.path.join(test_class_dir, img))
+
+    print("Dataset split complete.")
+
+def convert_heic_to_jpg(folder):
+    for root, _, files in os.walk(folder):
+        for file in files:
+            if file.lower().endswith(".heic"):
+                heic_path = os.path.join(root, file)
+                jpg_path = os.path.splitext(heic_path)[0] + ".jpg"
+                try:
+                    img = Image.open(heic_path)
+                    img.save(jpg_path, "JPEG")
+                    print(f"Converted: {file}")
+                except Exception as e:
+                    print(f"Failed to convert {file}: {e}")
+
+# convert_heic_to_jpg("Photos_split/test")
+
+
+# train_model("POS 153")
