@@ -63,7 +63,9 @@ def get_hloc_camera_matrix_from_image(img_path, dataset_name, shared_data=shared
         db_reconstruction=db_reconstruction,
     )
 
-    ret["confidence"] = float(
+    ret["num_keypoints"] = int(log["keypoints_query"].shape[0])
+
+    ret["num_inliers/num_keypoints"] = float(
         log["PnP_ret"]["num_inliers"] / log["keypoints_query"].shape[0]
     )
 
@@ -93,6 +95,8 @@ def localize(img_path, dataset_name):
             "pose": pose_matrix,
             "num_inliers": int(ret["num_inliers"]),
             "confidence": int(ret["num_inliers"]),
+            "num_inliers/num_keypoints": ret["num_inliers/num_keypoints"],
+            "num_keypoints": ret["num_keypoints"],
         }
     else:
         return {"success": False, "pose": None, "confidence": 0}

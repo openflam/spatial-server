@@ -1,4 +1,4 @@
-function uploadZip(serverAddress, progressBar, submitButton) {
+function uploadZip(serverAddress, progressBar, submitButton, options = null) {
     var name = document.getElementById('name').value;
     var zipFile = document.getElementById('zip').files[0];
 
@@ -10,6 +10,13 @@ function uploadZip(serverAddress, progressBar, submitButton) {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('zip', zipFile);
+
+    // Add any additional options to the form data
+    if (options) {
+        for (let key in options) {
+            formData.append(key, options[key]);
+        }
+    }
 
     // Make the progress bar visible and set its width to 0% 
     progressBar.style.visibility = 'visible';
