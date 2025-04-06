@@ -15,13 +15,29 @@
 
 <body>
     <div class="container-sm position-absolute top-50 start-50 translate-middle">
-        <h2 class="text-center">Spatial Server</h2>
-        <div class="row-cols-1 justify-content-center">
-            <button type="button" class="btn btn-primary mb-2" id="create-map">Create Map</button>
-            <button type="button" class="btn btn-primary mb-2" id="download-map">Download Map</button>
-            <button type="button" class="btn btn-primary mb-2" id="register-map">Register Map</button>
-            <button type="button" class="btn btn-primary mb-2" id="save-image-pose">Save Image Pose</button>
-            <button type="button" class="btn btn-primary mb-2" id="upload-waypoints">Upload Waypoints</button>
+        <div class="row">
+            <!-- Column 1: Map Creation -->
+            <div class="col-md-4 d-flex flex-column">
+                <h4 class="text-center">Map Creation</h4>
+                <button type="button" class="btn btn-primary mb-2" id="create-map">Create Map</button>
+                <button type="button" class="btn btn-primary mb-2" id="view-logs">View Logs</button>
+                <button type="button" class="btn btn-primary mb-2" id="download-map">Download Map</button>
+            </div>
+
+            <!-- Column 2: Map Transforms -->
+            <div class="col-md-4 d-flex flex-column">
+                <h4 class="text-center">Map Transforms</h4>
+                <button type="button" class="btn btn-info mb-2" id="save-image-pose">Save Image Pose</button>
+                <button type="button" class="btn btn-info mb-2" id="scale-map">Scale Map</button>
+                <button type="button" class="btn btn-info mb-2" id="rotate-map">Rotate Map</button>
+            </div>
+
+            <!-- Column 3: Waypoints -->
+            <div class="col-md-4 d-flex flex-column">
+                <h4 class="text-center">Waypoints</h4>
+                <button type="button" class="btn btn-success mb-2" id="upload-waypoints">Upload Waypoints</button>
+                <button type="button" class="btn btn-success mb-2" id="explore-waypoints">Explore Waypoints</button>
+            </div>
         </div>
     </div>
 
@@ -38,17 +54,26 @@
         document.getElementById('create-map').addEventListener('click', function () {
             window.location.href = "/create_map";
         });
+        document.getElementById('view-logs').addEventListener('click', function () {
+            window.location.href = "/view_logs";
+        });
+        document.getElementById('scale-map').addEventListener('click', function () {
+            window.location.href = "/scale_map";
+        });
+        document.getElementById('rotate-map').addEventListener('click', function () {
+            window.location.href = "/rotate_map";
+        });
         document.getElementById('download-map').addEventListener('click', function () {
             window.location.href = "/download_map";
-        });
-        document.getElementById('register-map').addEventListener('click', function () {
-            window.location.href = "/register_with_discovery";
         });
         document.getElementById('save-image-pose').addEventListener('click', function () {
             window.location.href = "/save_image_pose";
         });
         document.getElementById('upload-waypoints').addEventListener('click', function () {
             window.location.href = "/upload_waypoints";
+        });
+        document.getElementById('explore-waypoints').addEventListener('click', function () {
+            window.location.href = "/explore_waypoints";
         });
     </script>
 </body>

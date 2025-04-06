@@ -10,12 +10,19 @@
     <input type="file" class="form-control mb-2" id="zip">
 </div>
 
-<button type="button" class="btn btn-success" id="submit-button">Submit</button>
+<button type="button" class="btn btn-success mb-3" id="submit-button">Submit</button>
+
+<div class="progress">
+    <div id="progressBar" class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+        aria-valuemax="100" style="width: 0%; visibility: hidden;">0%</div>
+</div>
 
 <script src="{{ url_for('static', filename = 'scripts/map_upload/zip_upload.js') }}"></script>
 
 <script>
     document.getElementById('submit-button').addEventListener('click', function () {
-        uploadZip(serverAddress = '/create_map/polycam');
+        const progressBar = document.getElementById('progressBar');
+        const submitButton = document.getElementById('submit-button');
+        uploadZip('/create_map/polycam', progressBar, submitButton);
     });
 </script>

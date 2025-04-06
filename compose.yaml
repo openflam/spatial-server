@@ -1,10 +1,7 @@
 services:
   spatial-server:
     build: .
-    command: >
-      flask --app spatial_server/server run --host 0.0.0.0
-      --port 8001 --cert=/ssl/cert.pem --key=/ssl/key.pem
-    # command: tail -F anything
+    command: bash start_server.sh
     volumes:
       - ./:/code
     ports:
@@ -14,10 +11,12 @@ services:
     shm_size: 20g
     environment:
       - TORCH_HOME=/code/data/torch_hub
+      - BEHIND_PROXY=${BEHIND_PROXY:-false}
+      - HTTPS=${HTTPS:-true} # Default is HTTPS
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               count: all
-              capabilities: [gpu]
+              capabilities: [ gpu ]

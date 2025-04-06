@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>Scale Map</title>
+</head>
+
+<body>
+    <div class="container-sm position-absolute top-50 start-50 translate-middle">
+        <h2 class="text-center">Scale Map</h2>
+        <div class="p-3 mb-2 bg-light text-dark">
+            Maps created using a video need to be scaled to the real-world as video frames do not provide scale.
+            Before scaling, make sure the real-world pose data is collected using the "Save Image Pose" application.
+        </div>
+        <div class="mb-3">
+            <label for="map_name" class="form-label">Map name</label>
+            <select id="map_name" class="form-control custom-select">
+                {% for map_name in map_names_list %}
+                <option value="{{ map_name }}">{{ map_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="button" class="btn btn-success" onclick="scaleMap()">Scale</button>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script>
+        function scaleMap() {
+            var map_name = document.getElementById("map_name").value;
+            fetch(`/scale_map/${map_name}`)
+                .then(response => response.text())
+                .then(data => {
+                    // Handle the response data here
+                    alert(data);
+                })
+                .catch(error => {
+                    alert("Error: " + error);
+                });
+        }
+    </script>
+</body>
+
+</html>
