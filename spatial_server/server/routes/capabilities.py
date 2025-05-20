@@ -18,6 +18,7 @@ def get_capabilities(map_name):
             {
                 "name": "tileserver",
                 "url": f"/{map_name}/static/tileserver",
+                "type": "glb", # glb or tilejson
             }
         ]
     }
