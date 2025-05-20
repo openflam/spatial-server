@@ -88,6 +88,10 @@ def create_app(test_config=None):
 
     app.register_blueprint(view_logs.bp)
 
+    from .routes import static_files
+
+    app.register_blueprint(static_files.bp)
+
     # Read the BEHIND_PROXY environment variable
     behind_proxy = os.getenv("BEHIND_PROXY", "false").lower() == "true"
     print("BEHIND_PROXY:", behind_proxy)
