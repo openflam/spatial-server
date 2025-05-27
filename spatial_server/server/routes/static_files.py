@@ -32,12 +32,20 @@ def get_tilecontent(map_name):
     Serve the tile GLB for the map.
     """
     directory = os.path.join("data", "map_data", map_name)
+
+    # Check if the tile content is in the polycam_data directory
     map_glb_path = os.path.join(directory, "polycam_data", "raw.glb")
-
     map_glb_path = os.path.abspath(map_glb_path)
-
     if os.path.exists(map_glb_path):
         return send_file(map_glb_path, mimetype="model/gltf-binary")
+    
+    # If not, check if it's in the directory
+    map_glb_path = os.path.join(directory, "tile", "mesh.glb")
+    map_glb_path = os.path.abspath(map_glb_path)
+    if os.path.exists(map_glb_path):
+        return send_file(map_glb_path, mimetype="model/gltf-binary")
+    
+    # If neither exists, return an empty file
     else:
         return send_file(BytesIO(), mimetype="model/gltf-binary")
 
@@ -48,7 +56,7 @@ def get_tileserver(map_name):
     Serve the tileserver json for the map.
     """
     directory = os.path.join("data", "map_data", map_name)
-    map_tileserver_path = os.path.join(directory, "tileset.json")
+    map_tileserver_path = os.path.join(directory, "tile", "tileset.json")
 
     map_tileserver_path = os.path.abspath(map_tileserver_path)
 
