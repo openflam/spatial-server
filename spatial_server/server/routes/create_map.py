@@ -1,4 +1,6 @@
+import json
 import os
+import re
 
 from flask import Blueprint, request, render_template, url_for
 
@@ -23,6 +25,18 @@ def _save_file(file, folder_path, filename):
     return file_path
 
 
+def _to_title_case(s):
+    # If snake_case: split on underscores
+    if "_" in s:
+        words = s.split("_")
+    else:
+        # If camelCase or PascalCase: split using regex
+        words = re.findall(r'[A-Z]?[a-z]+|[A-Z]+(?=[A-Z]|$)', s)
+
+    # Capitalize each word and join with a space
+    return ' '.join(word.capitalize() for word in words)
+
+
 def _create_localization_url_file(dataset_name):
     # Create a file with the URL that will be used to query against the map
     folder_path = os.path.join("data", "map_data", dataset_name)
@@ -33,6 +47,31 @@ def _create_localization_url_file(dataset_name):
         )  # Remove the leading slash
         f.write(localization_url)
 
+
+def _create_capabilities_file(map_name, capabilities_list=["localization", "tileserver"]):
+    capabilities_path = os.path.join("data", "map_data", map_name, "capabilities.json")
+    capabilities = {
+        "commonName": _to_title_case(map_name),
+        "iconURL": f"/static/icon",
+        "services": []
+    }
+
+    for capability in capabilities_list:
+        if capability == "localization":
+            capabilities["services"].append({
+                "name": "localization",
+                "url": f"/localize",
+                "types": ["image"],
+            })
+        elif capability == "tileserver":
+            capabilities["services"].append({
+                "name": "tileserver",
+                "url": f"/static/tileset",
+            })
+
+    with open(capabilities_path, "w") as file:
+        json.dump(capabilities, file)
+        
 
 def _extract_zip(zip_file, folder_path, log_filepath=None):
     unzip_command = [
@@ -143,8 +182,11 @@ def upload_kiri_engine():
 
 @bp.route("/tileset", methods=["POST"])
 def upload_tileset():
-    _tileset_folder_path = _save_and_extract_zip(
+    _tileset_folder_path  = _save_and_extract_zip(
         request, extract_folder_name="tile"
     )
-
+    _create_capabilities_file(
+        map_name=request.form.get("name"),
+        capabilities_list=["tileserver"]
+    )
     return "Tileset uploaded"
