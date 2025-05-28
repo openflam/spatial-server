@@ -37,6 +37,7 @@ def _create_localization_url_file(dataset_name):
 def _extract_zip(zip_file, folder_path, log_filepath=None):
     unzip_command = [
         "unzip",
+        "-o",  # Overwrite existing files without prompting
         zip_file,
         "-d",
         folder_path,
@@ -139,3 +140,11 @@ def upload_kiri_engine():
     # Call the map builder function
     executor.submit(map_creator.create_map_from_polycam_output, kiri_directory)
     return "Polycam output uploaded and map building started"
+
+@bp.route("/tileset", methods=["POST"])
+def upload_tileset():
+    _tileset_folder_path = _save_and_extract_zip(
+        request, extract_folder_name="tile"
+    )
+
+    return "Tileset uploaded"

@@ -22,6 +22,7 @@
                 <!-- <option value="images">Images</option> -->
                 <option value="video">Video</option>
                 <option value="polycam">Polycam</option>
+                <option value="tileset">Tileset</option>
                 <!-- <option value="kiriEngine">Kiri Engine</option> -->
             </select>
         </div>
@@ -52,6 +53,8 @@
                 render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/polycam_upload.html") | tojson }}
             } else if (selectedValue === "kiriEngine") {
                 render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/kiri_upload.html") | tojson }}
+            } else if (selectedValue === "tileset") {
+                render_template_url = {{ url_for('render_template.render_template_route', name = "map_upload/tileset_upload.html") | tojson }}
             }
             $("#formContainer").load(render_template_url);
         }
