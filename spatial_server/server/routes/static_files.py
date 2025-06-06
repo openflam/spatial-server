@@ -26,21 +26,21 @@ def get_icon(map_name):
         return send_file(default_icon_path, mimetype="image/jpeg")
 
 
-@bp.route("/tilecontent", methods=["GET"])
-def get_tilecontent(map_name):
+@bp.route("/tilecontent/<path:filepath>", methods=["GET"])
+def get_tilecontent(map_name, filepath):
     """
     Serve the tile GLB for the map.
     """
     directory = os.path.join("data", "map_data", map_name)
-
-    # Check if the tile content is in the polycam_data directory
-    map_glb_path = os.path.join(directory, "polycam_data", "raw.glb")
+    
+    # Check if the tile content is in the tile directory
+    map_glb_path = os.path.join(directory, "tile", filepath)
     map_glb_path = os.path.abspath(map_glb_path)
     if os.path.exists(map_glb_path):
         return send_file(map_glb_path, mimetype="model/gltf-binary")
     
-    # If not, check if it's in the directory
-    map_glb_path = os.path.join(directory, "tile", "mesh.glb")
+    # Check if the tile content is in the polycam_data directory
+    map_glb_path = os.path.join(directory, "polycam_data", "raw.glb")
     map_glb_path = os.path.abspath(map_glb_path)
     if os.path.exists(map_glb_path):
         return send_file(map_glb_path, mimetype="model/gltf-binary")
