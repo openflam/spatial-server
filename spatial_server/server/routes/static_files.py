@@ -25,6 +25,24 @@ def get_icon(map_name):
     else:
         return send_file(default_icon_path, mimetype="image/jpeg")
 
+@bp.route("/credit_icon", methods=["GET"])
+def get_credit_icon(map_name):
+    """
+    Serve the icon for the map.
+    """
+    directory = os.path.join("data", "map_data", map_name)
+
+    map_icon_path = os.path.join(directory, "credit_icon.png")
+    default_icon_path = os.path.join("spatial_server", "server", "static", "images", "default_credit_icon.png")
+
+    map_icon_path = os.path.abspath(map_icon_path)
+    default_icon_path = os.path.abspath(default_icon_path)
+
+    if os.path.exists(map_icon_path):
+        return send_file(map_icon_path, mimetype="image/png")
+    else:
+        return send_file(default_icon_path, mimetype="image/png")
+
 
 @bp.route("/tilecontent/<path:filepath>", methods=["GET"])
 def get_tilecontent(map_name, filepath):
