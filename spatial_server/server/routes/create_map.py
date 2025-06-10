@@ -67,6 +67,7 @@ def _create_capabilities_file(map_name, capabilities_list=["localization", "tile
             capabilities["services"].append({
                 "name": "tileserver",
                 "url": f"/static/tileset",
+                "creditImageUrl": "/static/credit_icon"
             })
 
     with open(capabilities_path, "w") as file:
