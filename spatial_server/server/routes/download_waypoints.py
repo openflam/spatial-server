@@ -21,7 +21,7 @@ def download_waypoints(map_name):
         {
             "name": waypoint["id"],
             "position": [waypoint["x"], waypoint["y"], waypoint["z"]],
-            "neighbors": waypoint["neighbors"].split(";"),
+            "neighbors": str(waypoint["neighbors"]).split(";"),
         }
         for waypoint in waypoints_graph_df
     ]

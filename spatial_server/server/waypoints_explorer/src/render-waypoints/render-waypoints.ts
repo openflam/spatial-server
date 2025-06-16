@@ -45,6 +45,9 @@ function createWaypointsGraphEntity(waypoints: WayPoint[]) {
         // Add the waypoint connections to each neighbor
         waypoint.neighbors.forEach(neighborName => {
             let neighborWaypoint = waypoints.find(w => w.name === neighborName);
+            if (!neighborWaypoint) {
+                return;
+            }
             if (waypoint.name > neighborWaypoint.name) {
                 // Only create the connection once for a pair of waypoints
                 return;
