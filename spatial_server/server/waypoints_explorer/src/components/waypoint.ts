@@ -2,7 +2,8 @@ AFRAME.registerComponent('waypoint', {
     schema: {
         name: { type: 'string' },
         radius: { type: 'number', default: 0.1 },
-        color: { type: 'string', default: '#00aaff' }
+        color: { type: 'string', default: '#00aaff' },
+        textColor: { type: 'string', default: '#00aaff' }
     },
 
     update: function (oldData: any) {
@@ -20,7 +21,7 @@ AFRAME.registerComponent('waypoint', {
             "width": 2,
             "value": data.name,
             "align": "center",
-            "color": data.color
+            "color": data.textColor,
         });
         textEntity.setAttribute("position", { x: 0, y: 0.2, z: 0 });
         textEntity.setAttribute("look-at", "[camera]");
