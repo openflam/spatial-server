@@ -19,9 +19,7 @@ from third_party.hloc.hloc import (
 
 from .. import config, load_cache
 from spatial_server.server import shared_data
-from spatial_server.utils.run_command import run_command
-from spatial_server.utils.print_log import print_log
-from . import map_aligner, map_cleaner, kiri_engine, polycam, video
+from . import map_aligner, map_cleaner, mask_objects, kiri_engine, polycam
 
 
 def create_map_from_colmap_data(
@@ -55,6 +53,10 @@ def create_map_from_colmap_data(
         hloc_output_dir / "sfm_reconstruction"
     )  # Path to reconstructed SfM
 
+    # Remove masked 3D points from the reconstruction
+    print("Removing 3D points corresponding to masked (frequently moving) objects..")
+    mask_objects.remove_masked_points3d(colmap_model_path, image_dir)
+
     # Feature extraction
     ## Extract local features in each data set image using Superpoint
     print("Extracting local features using Superpoint..")
@@ -62,6 +64,10 @@ def create_map_from_colmap_data(
     local_features_path = extract_features.main(
         conf=local_feature_conf, image_dir=image_dir, export_dir=hloc_output_dir
     )
+
+    # Remove masked keypoints from local features database
+    print("Removing masked local features...")
+    mask_objects.remove_masked_keypoints(colmap_model_path, local_features_path, image_dir)
 
     print("Extracting global descriptors using NetVLad..")
     ## Extract global descriptors from each image using NetVLad
