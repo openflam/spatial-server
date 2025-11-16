@@ -307,6 +307,8 @@ def build_map_from_polycam_output(polycam_data_directory, log_filepath=None, neg
             f"{ns_data_directory}",
             "--min-blur-score",
             "0",
+            "--max-dataset-size",
+            "-1",
         ],
         log_filepath=log_filepath,
     )
