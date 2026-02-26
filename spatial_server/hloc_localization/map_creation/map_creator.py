@@ -21,7 +21,7 @@ from .. import config, load_cache
 from spatial_server.server import shared_data
 from spatial_server.utils.run_command import run_command
 from spatial_server.utils.print_log import print_log
-from . import map_aligner, map_cleaner, kiri_engine, polycam, video
+from . import map_aligner, map_cleaner, kiri_engine, polycam, video, polycam2
 
 
 def create_map_from_colmap_data(
@@ -178,4 +178,5 @@ def create_map_from_kiri_engine_output(data_dir):
 
 
 def create_map_from_polycam_output(data_dir, log_filepath=None, negate_y_mesh_align=True):
-    polycam.build_map_from_polycam_output(data_dir, log_filepath=log_filepath, negate_y_mesh_align=negate_y_mesh_align)
+    # polycam.build_map_from_polycam_output(data_dir, log_filepath=log_filepath, negate_y_mesh_align=negate_y_mesh_align)
+    polycam2.run_polycam2(data_dir, log_filepath=log_filepath, negate_y_mesh_align=negate_y_mesh_align)
