@@ -11,6 +11,9 @@ bp = Blueprint("view_logs", __name__, url_prefix="/view_logs")
 @bp.route("/", methods=["GET"])
 def render_logs_map_select():
     map_names_list = os.listdir("data/map_data")
+    map_names_list = sorted(
+        map_names_list, key=lambda x: x.lower()
+    )  # Sort map names alphabetically, ignoring case
     return render_template("view_logs/select_map.html", map_names_list=map_names_list)
 
 
